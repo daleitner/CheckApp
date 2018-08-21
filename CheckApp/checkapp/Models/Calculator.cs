@@ -586,7 +586,7 @@ namespace CheckApp
 		private bool CanCheck(Field dart1, Field dart2, int score)
 		{
 			int erg = dart1.Score + dart2.Score;
-			bool ret = false;
+			var ret = false;
 			if (erg < score)
 			{
 				int rest = score - erg;

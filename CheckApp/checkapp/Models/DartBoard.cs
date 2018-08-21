@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace CheckApp
 {
 	public class DartBoard
 	{
-		private List<List<Field>> dartBoard = null;
+		private List<List<Field>> _dartBoard;
 
-		private List<int> doubled = new List<int>() { 1, 2, 3, 4 };
-		private int tripled = 1;
-		private int singled = 1;
-		private int bulld = 1;
-		private int doublebulld = 1;
+		private readonly List<int> _doubled = new List<int> { 1, 2, 3, 4 };
+		private const int Tripled = 1;
+		private const int Singled = 1;
+		private const int Bulld = 1;
+		private const int Doublebulld = 1;
 
 		public DartBoard()
 		{
@@ -23,137 +20,119 @@ namespace CheckApp
 
 		private void InitializeDartboard()
 		{
-			dartBoard = new List<List<Field>>();
+			_dartBoard = new List<List<Field>>();
 
-			List<Field> temp = new List<Field>();
-			temp.Add(new Field(40, doubled[0], FieldType.Double));
-			temp.Add(new Field(2, doubled[3], FieldType.Double));
-			temp.Add(new Field(36, doubled[1], FieldType.Double));
-			temp.Add(new Field(8, doubled[0], FieldType.Double));
-			temp.Add(new Field(26, doubled[2], FieldType.Double));
-			temp.Add(new Field(12, doubled[1], FieldType.Double));
-			temp.Add(new Field(20, doubled[1], FieldType.Double));
-			temp.Add(new Field(30, doubled[2], FieldType.Double));
-			temp.Add(new Field(4, doubled[1], FieldType.Double));
-			temp.Add(new Field(34, doubled[2], FieldType.Double));
-			temp.Add(new Field(6, doubled[3], FieldType.Double));
-			temp.Add(new Field(38, doubled[2], FieldType.Double));
-			temp.Add(new Field(14, doubled[3], FieldType.Double));
-			temp.Add(new Field(32, doubled[0], FieldType.Double));
-			temp.Add(new Field(16, doubled[0], FieldType.Double));
-			temp.Add(new Field(22, doubled[2], FieldType.Double));
-			temp.Add(new Field(28, doubled[1], FieldType.Double));
-			temp.Add(new Field(18, doubled[3], FieldType.Double));
-			temp.Add(new Field(24, doubled[0], FieldType.Double));
-			temp.Add(new Field(10, doubled[3], FieldType.Double));
-			dartBoard.Add(temp);
-			temp = new List<Field>();
-			foreach (Field f in dartBoard[0])
+			var temp = new List<Field>
 			{
-				temp.Add(new Field(f.Score / 2, singled, FieldType.Single));
-			}
-			dartBoard.Add(temp);
+				new Field(40, _doubled[0], FieldType.Double),
+				new Field(2, _doubled[3], FieldType.Double),
+				new Field(36, _doubled[1], FieldType.Double),
+				new Field(8, _doubled[0], FieldType.Double),
+				new Field(26, _doubled[2], FieldType.Double),
+				new Field(12, _doubled[1], FieldType.Double),
+				new Field(20, _doubled[1], FieldType.Double),
+				new Field(30, _doubled[2], FieldType.Double),
+				new Field(4, _doubled[1], FieldType.Double),
+				new Field(34, _doubled[2], FieldType.Double),
+				new Field(6, _doubled[3], FieldType.Double),
+				new Field(38, _doubled[2], FieldType.Double),
+				new Field(14, _doubled[3], FieldType.Double),
+				new Field(32, _doubled[0], FieldType.Double),
+				new Field(16, _doubled[0], FieldType.Double),
+				new Field(22, _doubled[2], FieldType.Double),
+				new Field(28, _doubled[1], FieldType.Double),
+				new Field(18, _doubled[3], FieldType.Double),
+				new Field(24, _doubled[0], FieldType.Double),
+				new Field(10, _doubled[3], FieldType.Double)
+			};
+			_dartBoard.Add(temp);
 			temp = new List<Field>();
-			foreach (Field f in dartBoard[1])
+			foreach (Field f in _dartBoard[0])
 			{
-				temp.Add(new Field(f.Score * 3, tripled, FieldType.Triple));
+				temp.Add(new Field(f.Score / 2, Singled, FieldType.Single));
 			}
-			dartBoard.Add(temp);
-			dartBoard.Add(new List<Field>() { new Field(25, bulld, FieldType.Single), new Field(50, doublebulld, FieldType.Double) });
+			_dartBoard.Add(temp);
+			temp = new List<Field>();
+			foreach (Field f in _dartBoard[1])
+			{
+				temp.Add(new Field(f.Score * 3, Tripled, FieldType.Triple));
+			}
+			_dartBoard.Add(temp);
+			_dartBoard.Add(new List<Field> { new Field(25, Bulld, FieldType.Single), new Field(50, Doublebulld, FieldType.Double) });
 		}
 
 		public Field GetFirstField()
 		{
-			return this.dartBoard[1][0];
+			return _dartBoard[1][0];
 		}
 
 		public Field GetBull()
 		{
-			return this.dartBoard[3][0];
+			return _dartBoard[3][0];
 		}
 
 		public Field GetLeft(Field src)
 		{
-			Field ret = null;
-			bool check = false;
-			int x = 0;
-			int y = 0;
-			for (int i = 0; i < dartBoard.Count && !check; i++)
+			Field ret;
+			var check = false;
+			var x = 0;
+			var y = 0;
+			for (var i = 0; i < _dartBoard.Count && !check; i++)
 			{
-				for (int j = 0; j < dartBoard[i].Count && !check; j++)
+				for (var j = 0; j < _dartBoard[i].Count && !check; j++)
 				{
-					if (dartBoard[i][j].Equals(src))
-					{
-						x = i;
-						y = j;
-						check = true;
-					}
+					if (!_dartBoard[i][j].Equals(src))
+						continue;
+
+					x = i;
+					y = j;
+					check = true;
 				}
 			}
 
-			if (check)
+			if (!check)
+				return null;
+
+			if (x == 3)
 			{
-				if (x == 3)
-				{
-					if (y == 0)
-						ret = dartBoard[x][y + 1];
-					else
-						ret = dartBoard[x][y - 1];
-				}
-				else
-				{
-					if (y == 0)
-					{
-						ret = dartBoard[x][dartBoard[x].Count - 1];
-					}
-					else
-					{
-						ret = dartBoard[x][y - 1];
-					}
-				}
+				ret = y == 0 ? _dartBoard[x][y + 1] : _dartBoard[x][y - 1];
+			}
+			else
+			{
+				ret = y == 0 ? _dartBoard[x][_dartBoard[x].Count - 1] : _dartBoard[x][y - 1];
 			}
 			return ret;
 		}
 
 		public Field GetRight(Field src)
 		{
-			Field ret = null;
-			bool check = false;
-			int x = 0;
-			int y = 0;
-			for (int i = 0; i < dartBoard.Count && !check; i++)
+			Field ret;
+			var check = false;
+			var x = 0;
+			var y = 0;
+			for (var i = 0; i < _dartBoard.Count && !check; i++)
 			{
-				for (int j = 0; j < dartBoard[i].Count && !check; j++)
+				for (var j = 0; j < _dartBoard[i].Count && !check; j++)
 				{
-					if (dartBoard[i][j].Equals(src))
-					{
-						x = i;
-						y = j;
-						check = true;
-					}
+					if (!_dartBoard[i][j].Equals(src))
+						continue;
+
+					x = i;
+					y = j;
+					check = true;
 				}
 			}
 
-			if (check)
+			if (!check)
+				return null;
+
+			if (x == 3)
 			{
-				if (x == 3)
-				{
-					if (y == 0)
-						ret = dartBoard[x][y + 1];
-					else
-						ret = dartBoard[x][y - 1];
-				}
-				else
-				{
-					if (y == dartBoard[x].Count - 1)
-					{
-						ret = dartBoard[x][0];
-					}
-					else
-					{
-						ret = dartBoard[x][y + 1];
-					}
-				}
+				ret = y == 0 ? _dartBoard[x][y + 1] : _dartBoard[x][y - 1];
+			}
+			else
+			{
+				ret = y == _dartBoard[x].Count - 1 ? _dartBoard[x][0] : _dartBoard[x][y + 1];
 			}
 			return ret;
 		}
@@ -161,32 +140,25 @@ namespace CheckApp
 		public Field GetSingle(Field src)
 		{
 			Field ret = null;
-			bool check = false;
-			int x = 0;
-			int y = 0;
-			for (int i = 0; i < dartBoard.Count && !check; i++)
+			var check = false;
+			var x = 0;
+			var y = 0;
+			for (var i = 0; i < _dartBoard.Count && !check; i++)
 			{
-				for (int j = 0; j < dartBoard[i].Count && !check; j++)
+				for (var j = 0; j < _dartBoard[i].Count && !check; j++)
 				{
-					if (dartBoard[i][j].Equals(src))
-					{
-						x = i;
-						y = j;
-						check = true;
-					}
+					if (!_dartBoard[i][j].Equals(src))
+						continue;
+
+					x = i;
+					y = j;
+					check = true;
 				}
 			}
 
 			if (check)
 			{
-				if (x == 3)
-				{
-					ret = dartBoard[x][0];
-				}
-				else
-				{
-					ret = dartBoard[1][y];
-				}
+				ret = x == 3 ? _dartBoard[x][0] : _dartBoard[1][y];
 			}
 			return ret;
 		}
@@ -194,32 +166,25 @@ namespace CheckApp
 		public Field GetDouble(Field src)
 		{
 			Field ret = null;
-			bool check = false;
-			int x = 0;
-			int y = 0;
-			for (int i = 0; i < dartBoard.Count && !check; i++)
+			var check = false;
+			var x = 0;
+			var y = 0;
+			for (var i = 0; i < _dartBoard.Count && !check; i++)
 			{
-				for (int j = 0; j < dartBoard[i].Count && !check; j++)
+				for (var j = 0; j < _dartBoard[i].Count && !check; j++)
 				{
-					if (dartBoard[i][j].Equals(src))
-					{
-						x = i;
-						y = j;
-						check = true;
-					}
+					if (!_dartBoard[i][j].Equals(src))
+						continue;
+
+					x = i;
+					y = j;
+					check = true;
 				}
 			}
 
 			if (check)
 			{
-				if (x == 3)
-				{
-					ret = dartBoard[x][1];
-				}
-				else
-				{
-					ret = dartBoard[0][y];
-				}
+				ret = x == 3 ? _dartBoard[x][1] : _dartBoard[0][y];
 			}
 			return ret;
 		}
@@ -227,44 +192,37 @@ namespace CheckApp
 		public Field GetTriple(Field src)
 		{
 			Field ret = null;
-			bool check = false;
-			int x = 0;
-			int y = 0;
-			for (int i = 0; i < dartBoard.Count && !check; i++)
+			var check = false;
+			var x = 0;
+			var y = 0;
+			for (var i = 0; i < _dartBoard.Count && !check; i++)
 			{
-				for (int j = 0; j < dartBoard[i].Count && !check; j++)
+				for (var j = 0; j < _dartBoard[i].Count && !check; j++)
 				{
-					if (dartBoard[i][j].Equals(src))
-					{
-						x = i;
-						y = j;
-						check = true;
-					}
+					if (!_dartBoard[i][j].Equals(src))
+						continue;
+
+					x = i;
+					y = j;
+					check = true;
 				}
 			}
 
 			if (check)
 			{
-				if (x == 3)
-				{
-					ret = dartBoard[x][1];
-				}
-				else
-				{
-					ret = dartBoard[2][y];
-				}
+				ret = x == 3 ? _dartBoard[x][1] : _dartBoard[2][y];
 			}
 			return ret;
 		}
 
 		public List<Field> GetAllFields()
 		{
-			List<Field> ret = new List<Field>();
-			for (int i = 0; i < dartBoard.Count; i++)
+			var ret = new List<Field>();
+			foreach (var fields in _dartBoard)
 			{
-				for (int j = 0; j < dartBoard[i].Count; j++)
+				foreach (var field in fields)
 				{
-					ret.Add(dartBoard[i][j]);
+					ret.Add(field);
 				}
 			}
 			return ret;
@@ -272,12 +230,12 @@ namespace CheckApp
 
 		public List<Field> GetAllDoubles()
 		{
-			List<Field> ret = new List<Field>();
-			for (int i = 0; i < dartBoard[0].Count; i++)
+			var ret = new List<Field>();
+			for (var i = 0; i < _dartBoard[0].Count; i++)
 			{
-				ret.Add(dartBoard[0][i]);
+				ret.Add(_dartBoard[0][i]);
 			}
-			ret.Add(dartBoard[3][1]);
+			ret.Add(_dartBoard[3][1]);
 			return ret;
 		}
 	}
