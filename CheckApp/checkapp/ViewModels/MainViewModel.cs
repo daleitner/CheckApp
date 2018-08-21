@@ -31,8 +31,8 @@ namespace CheckApp
 		private bool _dart2DoubleChecked;
 		private bool _dart2TripleChecked;
 		private string _singleQuote = "55";
-		private string _doubleQuote = "20";
-		private string _tripleQuote = "15";
+		private string _doubleQuote = "15";
+		private string _tripleQuote = "10";
 		public MainViewModel()
 		{
 			_worker = new BackgroundWorker
