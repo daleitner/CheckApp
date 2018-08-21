@@ -1,88 +1,85 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CheckApp
 {
 	public class MainViewModel : ViewModelBase
 	{
-		private string score = "";
-		private List<string> leftDarts = null;
-		private string leftDartsSelected = "";
-		private ObservableCollection<CheckViewModel> solutions = null;
-		private RelayCommand calculateCommand = null;
-		private int checkCnt = 0;
-		private int calculationProgress = 0;
-		private BackgroundWorker worker = null;
-		private List<CheckViewModel> help = null;
-		private Calculator calc = null;
-		private Visibility loadVisibility = Visibility.Collapsed;
-		private bool dart1Enabled = true;
-		private bool dart2Enabled = true;
-		private bool dart1AlleChecked = true;
-		private bool dart1SingleChecked = false;
-		private bool dart1DoubleChecked = false;
-		private bool dart1TripleChecked = false;
-		private bool dart2AlleChecked = true;
-		private bool dart2SingleChecked = false;
-		private bool dart2DoubleChecked = false;
-		private bool dart2TripleChecked = false;
-		private string singleQuote = "55";
-		private string doubleQuote = "20";
-		private string tripleQuote = "15";
+		private string _score = "";
+		private List<string> _leftDarts;
+		private string _leftDartsSelected;
+		private ObservableCollection<CheckViewModel> _solutions;
+		private RelayCommand _calculateCommand;
+		private int _checkCnt;
+		private int _calculationProgress;
+		private readonly BackgroundWorker _worker;
+		private List<CheckViewModel> _help;
+		private Calculator _calc;
+		private Visibility _loadVisibility = Visibility.Collapsed;
+		private bool _dart1Enabled = true;
+		private bool _dart2Enabled = true;
+		private bool _dart1AlleChecked = true;
+		private bool _dart1SingleChecked;
+		private bool _dart1DoubleChecked;
+		private bool _dart1TripleChecked;
+		private bool _dart2AlleChecked = true;
+		private bool _dart2SingleChecked;
+		private bool _dart2DoubleChecked;
+		private bool _dart2TripleChecked;
+		private string _singleQuote = "55";
+		private string _doubleQuote = "20";
+		private string _tripleQuote = "15";
 		public MainViewModel()
 		{
-			worker = new BackgroundWorker()
+			_worker = new BackgroundWorker
 			{
 				WorkerReportsProgress = true,
 				WorkerSupportsCancellation = true
 			};
-			worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-			worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
-			worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
-			calc = new Calculator(int.Parse(this.singleQuote), int.Parse(this.doubleQuote), int.Parse(this.doubleQuote));
-			this.leftDarts = new List<string>() { "3", "2", "1" };
-			this.leftDartsSelected = this.leftDarts[0];
+			_worker.DoWork += worker_DoWork;
+			_worker.ProgressChanged += worker_ProgressChanged;
+			_worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+			_calc = new Calculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_doubleQuote));
+			_leftDarts = new List<string> { "3", "2", "1" };
+			_leftDartsSelected = _leftDarts[0];
 		}
 
 		void worker_DoWork(object sender, DoWorkEventArgs e)
 		{
-			var _worker = (BackgroundWorker)sender;
-			var _calc = (Calculator)e.Argument;
-			int scores = 0;
-			if (Int32.TryParse(Score, out scores))
+			var worker = (BackgroundWorker)sender;
+			int scores;
+			if (!int.TryParse(Score, out scores))
+				return;
+
+			int leftdarts;
+			int.TryParse(LeftDartsSelected, out leftdarts);
+			var par = new List<bool> { Dart1SingleChecked, Dart1DoubleChecked, Dart1TripleChecked, Dart2SingleChecked, Dart2DoubleChecked, Dart2TripleChecked };
+			if (Dart1AlleChecked || !Dart1Enabled)
 			{
-				int leftdarts = 3;
-				Int32.TryParse(LeftDartsSelected, out leftdarts);
-				List<bool> par = new List<bool>() { Dart1SingleChecked, Dart1DoubleChecked, Dart1TripleChecked, Dart2SingleChecked, Dart2DoubleChecked, Dart2TripleChecked };
-				if (Dart1AlleChecked || !Dart1Enabled)
-				{
-					par[0] = true;
-					par[1] = true;
-					par[2] = true;
-				}
-				if (Dart2AlleChecked || !Dart2Enabled)
-				{
-					par[3] = true;
-					par[4] = true;
-					par[5] = true;
-				}
-
-				help = calc.GetAllChecks(scores, leftdarts, _worker, par);
-
-				foreach (CheckViewModel check in help)
-				{
-					check.Check.Propability = Math.Round(check.Check.Propability * 100, 2);
-					check.Check.Calculation = Math.Round(check.Check.Calculation * 100, 2);
-				}
-
-				CheckCnt = help.Count;
+				par[0] = true;
+				par[1] = true;
+				par[2] = true;
 			}
+			if (Dart2AlleChecked || !Dart2Enabled)
+			{
+				par[3] = true;
+				par[4] = true;
+				par[5] = true;
+			}
+
+			_help = _calc.GetAllChecks(scores, leftdarts, worker, par);
+
+			foreach (var check in _help)
+			{
+				check.Check.Propability = Math.Round(check.Check.Propability * 100, 2);
+				check.Check.Calculation = Math.Round(check.Check.Calculation * 100, 2);
+			}
+
+			CheckCnt = _help.Count;
 		}
 
 		void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -93,14 +90,11 @@ namespace CheckApp
 		void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			Solutions = new ObservableCollection<CheckViewModel>();
-			Field dart1 = null;
-			Field dart2 = null;
-			Field dart3 = null;
-			foreach (CheckViewModel check in help)
+			foreach (CheckViewModel check in _help)
 			{
-				dart1 = null;
-				dart2 = null;
-				dart3 = null;
+				Field dart1;
+				Field dart2 = null;
+				Field dart3 = null;
 				if (check.Check.AufCheckDart == null)
 				{
 					dart1 = check.Check.CheckDart;
@@ -129,11 +123,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.score;
+				return _score;
 			}
 			set
 			{
-				this.score = value;
+				_score = value;
 				OnPropertyChanged("Score");
 			}
 		}
@@ -142,11 +136,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.leftDarts;
+				return _leftDarts;
 			}
 			set
 			{
-				this.leftDarts = value;
+				_leftDarts = value;
 				OnPropertyChanged("LeftDarts");
 			}
 		}
@@ -155,12 +149,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.leftDartsSelected;
+				return _leftDartsSelected;
 			}
 			set
 			{
-				this.leftDartsSelected = value;
-				switch (this.leftDartsSelected)
+				_leftDartsSelected = value;
+				switch (_leftDartsSelected)
 				{
 					case "1": Dart1Enabled = false; Dart2Enabled = false; break;
 					case "2": Dart1Enabled = true; Dart2Enabled = false; break;
@@ -174,11 +168,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.calculationProgress;
+				return _calculationProgress;
 			}
 			set
 			{
-				this.calculationProgress = value;
+				_calculationProgress = value;
 				OnPropertyChanged("CalculationProgress");
 			}
 		}
@@ -187,11 +181,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.checkCnt;
+				return _checkCnt;
 			}
 			set
 			{
-				this.checkCnt = value;
+				_checkCnt = value;
 				OnPropertyChanged("CheckCnt");
 			}
 		}
@@ -200,11 +194,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart1Enabled;
+				return _dart1Enabled;
 			}
 			set
 			{
-				this.dart1Enabled = value;
+				_dart1Enabled = value;
 				OnPropertyChanged("Dart1Enabled");
 			}
 		}
@@ -213,11 +207,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart2Enabled;
+				return _dart2Enabled;
 			}
 			set
 			{
-				this.dart2Enabled = value;
+				_dart2Enabled = value;
 				OnPropertyChanged("Dart2Enabled");
 			}
 		}
@@ -226,12 +220,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart1AlleChecked;
+				return _dart1AlleChecked;
 			}
 			set
 			{
-				this.dart1AlleChecked = value;
-				if (this.dart1AlleChecked)
+				_dart1AlleChecked = value;
+				if (_dart1AlleChecked)
 				{
 					Dart1SingleChecked = false;
 					Dart1DoubleChecked = false;
@@ -245,12 +239,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart1SingleChecked;
+				return _dart1SingleChecked;
 			}
 			set
 			{
-				this.dart1SingleChecked = value;
-				if (this.dart1SingleChecked && Dart1AlleChecked)
+				_dart1SingleChecked = value;
+				if (_dart1SingleChecked && Dart1AlleChecked)
 					Dart1AlleChecked = false;
 				OnPropertyChanged("Dart1SingleChecked");
 			}
@@ -260,12 +254,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart1DoubleChecked;
+				return _dart1DoubleChecked;
 			}
 			set
 			{
-				this.dart1DoubleChecked = value;
-				if (this.dart1DoubleChecked && Dart1AlleChecked)
+				_dart1DoubleChecked = value;
+				if (_dart1DoubleChecked && Dart1AlleChecked)
 					Dart1AlleChecked = false;
 				OnPropertyChanged("Dart1DoubleChecked");
 			}
@@ -275,12 +269,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart1TripleChecked;
+				return _dart1TripleChecked;
 			}
 			set
 			{
-				this.dart1TripleChecked = value;
-				if (this.dart1TripleChecked && Dart1AlleChecked)
+				_dart1TripleChecked = value;
+				if (_dart1TripleChecked && Dart1AlleChecked)
 					Dart1AlleChecked = false;
 				OnPropertyChanged("Dart1TripleChecked");
 			}
@@ -290,12 +284,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart2AlleChecked;
+				return _dart2AlleChecked;
 			}
 			set
 			{
-				this.dart2AlleChecked = value;
-				if (this.dart2AlleChecked)
+				_dart2AlleChecked = value;
+				if (_dart2AlleChecked)
 				{
 					Dart2SingleChecked = false;
 					Dart2DoubleChecked = false;
@@ -309,12 +303,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart2SingleChecked;
+				return _dart2SingleChecked;
 			}
 			set
 			{
-				this.dart2SingleChecked = value;
-				if (this.dart2SingleChecked && Dart2AlleChecked)
+				_dart2SingleChecked = value;
+				if (_dart2SingleChecked && Dart2AlleChecked)
 					Dart2AlleChecked = false;
 				OnPropertyChanged("Dart2SingleChecked");
 			}
@@ -324,12 +318,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart2DoubleChecked;
+				return _dart2DoubleChecked;
 			}
 			set
 			{
-				this.dart2DoubleChecked = value;
-				if (this.dart2DoubleChecked && Dart2AlleChecked)
+				_dart2DoubleChecked = value;
+				if (_dart2DoubleChecked && Dart2AlleChecked)
 					Dart2AlleChecked = false;
 				OnPropertyChanged("Dart2DoubleChecked");
 			}
@@ -339,12 +333,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.dart2TripleChecked;
+				return _dart2TripleChecked;
 			}
 			set
 			{
-				this.dart2TripleChecked = value;
-				if (this.dart2TripleChecked && Dart2AlleChecked)
+				_dart2TripleChecked = value;
+				if (_dart2TripleChecked && Dart2AlleChecked)
 					Dart2AlleChecked = false;
 				OnPropertyChanged("Dart2TripleChecked");
 			}
@@ -354,12 +348,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.singleQuote;
+				return _singleQuote;
 			}
 			set
 			{
-				this.singleQuote = value;
-				OnPropertyChanged(nameof(this.SingleQuote));
+				_singleQuote = value;
+				OnPropertyChanged(nameof(SingleQuote));
 			}
 		}
 
@@ -367,12 +361,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.doubleQuote;
+				return _doubleQuote;
 			}
 			set
 			{
-				this.doubleQuote = value;
-				OnPropertyChanged(nameof(this.DoubleQuote));
+				_doubleQuote = value;
+				OnPropertyChanged(nameof(DoubleQuote));
 			}
 		}
 
@@ -380,12 +374,12 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.tripleQuote;
+				return _tripleQuote;
 			}
 			set
 			{
-				this.tripleQuote = value;
-				OnPropertyChanged(nameof(this.tripleQuote));
+				_tripleQuote = value;
+				OnPropertyChanged(nameof(_tripleQuote));
 			}
 		}
 
@@ -393,11 +387,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.loadVisibility;
+				return _loadVisibility;
 			}
 			set
 			{
-				this.loadVisibility = value;
+				_loadVisibility = value;
 				OnPropertyChanged("LoadVisibility");
 			}
 		}
@@ -405,11 +399,11 @@ namespace CheckApp
 		{
 			get
 			{
-				return this.solutions;
+				return _solutions;
 			}
 			set
 			{
-				this.solutions = value;
+				_solutions = value;
 				OnPropertyChanged("Solutions");
 			}
 		}
@@ -418,23 +412,23 @@ namespace CheckApp
 		{
 			get
 			{
-				if (this.calculateCommand == null)
+				if (_calculateCommand == null)
 				{
-					this.calculateCommand = new RelayCommand(
+					_calculateCommand = new RelayCommand(
 						param => StartWorker()
 							);
 				}
-				return this.calculateCommand;
+				return _calculateCommand;
 			}
 		}
 
 		public void StartWorker()
 		{
 			LoadVisibility = Visibility.Visible;
-			if (!worker.IsBusy)
+			if (!_worker.IsBusy)
 			{
-				this.calc = new Calculator(int.Parse(this.singleQuote), int.Parse(this.doubleQuote), int.Parse(this.doubleQuote));
-				worker.RunWorkerAsync(calc);
+				_calc = new Calculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_doubleQuote));
+				_worker.RunWorkerAsync(_calc);
 			}
 		}
 	}
