@@ -16,8 +16,8 @@ namespace CheckApp
 		private readonly DartBoard _dBoard;
 		private List<bool> _checkchecks;
 
-		public double SingleQuote;
-		public double DoubleQuote;
+		private readonly double _singleQuote;
+		private readonly double _doubleQuote;
 		private readonly double _tripleQuote;
 		public double BullQuote;
 		public double DoubleBullQuote;
@@ -31,66 +31,66 @@ namespace CheckApp
 			_tripleHeight = 8;
 			_tripleRadius = 107;
 
-			SingleQuote = (double)singleQuote / 100;
-			DoubleQuote = (double)doubleQuote / 100;
+			_singleQuote = (double)singleQuote / 100;
+			_doubleQuote = (double)doubleQuote / 100;
 			_tripleQuote = (double)tripleQuote / 100;
-			BullQuote = (SingleQuote + DoubleQuote) / 2;
-			DoubleBullQuote = DoubleQuote / 2;
+			BullQuote = (_singleQuote + _doubleQuote) / 2;
+			DoubleBullQuote = _doubleQuote / 2;
 			_dBoard = new DartBoard();
 
 			_checkchecks = new List<bool> { true, true, true, true, true, true };
 		}
 
-		public double GetSingleFlaeche()
+		public double GetSingleArea()
 		{
-			return GetSingleInFlaeche() + GetSingleOutFlaeche();
+			return GetSingleInArea() + GetSingleOutArea();
 		}
 
-		public double GetSingleOutFlaeche()
+		public double GetSingleOutArea()
 		{
 			double outer = (_dartBoardRadius - _doubleHeight) * (_dartBoardRadius - _doubleHeight) * Pi;
 			double inner = _tripleRadius * _tripleRadius * Pi;
 			return (outer - inner) / 20;
 		}
 
-		public double GetSingleInFlaeche()
+		public double GetSingleInArea()
 		{
 			double outersmall = (_tripleRadius - _tripleHeight) * (_tripleRadius - _tripleHeight) * Pi;
 			double innersmall = _bullRadius * _bullRadius * Pi;
 			return (outersmall - innersmall) / 20;
 		}
 
-		public double GetDoubleFlaeche()
+		public double GetDoubleArea()
 		{
 			double outer = _dartBoardRadius * _dartBoardRadius * Pi;
 			double inner = (_dartBoardRadius - _doubleHeight) * (_dartBoardRadius - _doubleHeight) * Pi;
 			return (outer - inner) / 20;
 		}
-		public double GetTripleFlaeche()
+		public double GetTripleArea()
 		{
 			double outer = _tripleRadius * _tripleRadius * Pi;
 			double inner = (_tripleRadius - _tripleHeight) * (_tripleRadius - _tripleHeight) * Pi;
 			return (outer - inner) / 20;
 		}
-		public double GetSingleBullFlaeche()
+		public double GetSingleBullArea()
 		{
-			return _bullRadius * _bullRadius * Pi - GetDoubleBullFlaeche();
+			return _bullRadius * _bullRadius * Pi - GetDoubleBullArea();
 		}
-		public double GetDoubleBullFlaeche()
+		public double GetDoubleBullArea()
 		{
 			return _doubleBullRadius * _doubleBullRadius * Pi;
 		}
 
-		public double GetTrefferWahrscheinlichkeit(Field feld)
+		public double GetHitRatio(Field feld)
 		{
 			var ret = 0.0;
 			switch (feld.Type)
 			{
 				case FieldType.Single:
-					ret = feld.Score == 25 ? BullQuote : SingleQuote;
+					ret = feld.Score == 25 ? BullQuote : _singleQuote;
 					break;
 				case FieldType.Double:
-					ret = feld.Score == 50 ? DoubleBullQuote : DoubleQuote;
+					ret = feld.Score == 50 ? DoubleBullQuote : _doubleQuote;
 					break;
 				case FieldType.Triple:
 					ret = _tripleQuote;
@@ -99,7 +99,7 @@ namespace CheckApp
 			return ret;
 		}
 
-		public List<CheckViewModel> GetAllChecks(int scores, int leftdarts, BackgroundWorker worker, List<bool> checks)
+		public List<CheckViewModel> GetAllPossibleCheckouts(int scores, int leftdarts, BackgroundWorker worker, List<bool> checks)
 		{
 			_checkchecks = checks;
 			List<CheckViewModel> ret = CalculateChecks(scores, leftdarts, worker);
@@ -117,7 +117,7 @@ namespace CheckApp
 				{
 					ret.Add(GetCheck(scores, leftdarts, doppel));
 				}
-				else if (doppel.Score < scores && CheckNochMoeglich(doppel, scores) && leftdarts > 1)
+				else if (doppel.Score < scores && CanCheck(doppel, scores) && leftdarts > 1)
 				{
 					foreach (Field first in allFields)
 					{
@@ -151,7 +151,7 @@ namespace CheckApp
 						{
 							ret.Add(GetCheck(scores, leftdarts, first, doppel));
 						}
-						else if (first.Score + doppel.Score < scores && CheckNochMoeglich(first, doppel, scores) && leftdarts > 2)
+						else if (first.Score + doppel.Score < scores && CanCheck(first, doppel, scores) && leftdarts > 2)
 						{
 							var check = false;
 							foreach (Field second in allFields)
@@ -210,21 +210,21 @@ namespace CheckApp
 
 		private CheckViewModel GetCheck(int checkscore, int leftdarts, Field dart1)
 		{
-			double p = GetTrefferWahrscheinlichkeit(dart1);
+			double p = GetHitRatio(dart1);
 			CheckViewModel ret = new CheckViewModel(dart1, null, null, p, p, "");
 			if (leftdarts == 1) //wenn nur 1 dart übrig
 				return ret;
 
 			double notp = 1 - p;
 			double pbounce = 0.0;
-			double gesamtflaeche = GetNeighbourFlaeche(dart1); //gesamtfläche der nachbarfelder
+			double gesamtflaeche = GetNeighbourArea(dart1); //gesamtfläche der nachbarfelder
 			List<Field> daneben = GetNeighbourFields(dart1);
 			double danebenflaeche;
 			int restscore;
 
 			if (dart1.Score < 50)
 			{
-				pbounce = (GetSingleOutFlaeche() / gesamtflaeche) * notp;
+				pbounce = (GetSingleOutArea() / gesamtflaeche) * notp;
 			}
 
 			if (leftdarts == 2)
@@ -235,7 +235,7 @@ namespace CheckApp
 				{
 					if (f.Score < checkscore - 1)
 					{
-						danebenflaeche = GetNeighbourFieldFlaeche(dart1, f);
+						danebenflaeche = GetNeighbourFieldArea(dart1, f);
 						double pdaneben = notp * danebenflaeche / gesamtflaeche;
 
 						restscore = checkscore - f.Score;
@@ -258,7 +258,7 @@ namespace CheckApp
 			{
 				if (f.Score < checkscore - 1)
 				{
-					danebenflaeche = GetNeighbourFieldFlaeche(dart1, f);
+					danebenflaeche = GetNeighbourFieldArea(dart1, f);
 					double pdaneben = notp * danebenflaeche / gesamtflaeche;
 
 					restscore = checkscore - f.Score;
@@ -283,12 +283,12 @@ namespace CheckApp
 			//2 darts
 			//p(check) = p1*p2 + bounce*p2 + !p1*p2
 			CheckViewModel ret = new CheckViewModel(dart1, dart2, null, 0.0, 0.0, "");
-			double p1 = GetTrefferWahrscheinlichkeit(dart1);
-			double p2 = GetTrefferWahrscheinlichkeit(dart2);
+			double p1 = GetHitRatio(dart1);
+			double p2 = GetHitRatio(dart2);
 			ret.Check.Calculation = p1 * p2;
 			double notp1 = 1 - p1;
 			double pbounce = 0.0;
-			double gesamtflaeche = GetNeighbourFlaeche(dart1);
+			double gesamtflaeche = GetNeighbourArea(dart1);
 			List<CheckViewModel> checks = null;
 			List<Field> neighbours = GetNeighbourFields(dart1);
 
@@ -302,7 +302,7 @@ namespace CheckApp
 			{
 				if (f.Score < checkscore - 1)
 				{
-					double danebenflaeche = GetNeighbourFieldFlaeche(dart1, f);
+					double danebenflaeche = GetNeighbourFieldArea(dart1, f);
 					double pdaneben = notp1 * danebenflaeche / gesamtflaeche;
 					checks = CalculateChecks(checkscore - f.Score, leftdarts - 1, null); //!p1*p2 for 1 dart left; !p1*p2 + !p1*bounce*p2 + !p1*p1*p2 + !p1*!p1*p2 for 2 darts left
 					if (checks.Count > 0)
@@ -316,7 +316,7 @@ namespace CheckApp
 
 			if (dart1.Type.Equals(FieldType.Double) && dart1.Score != 50)
 			{
-				pbounce = (GetSingleOutFlaeche() / gesamtflaeche) * notp1;
+				pbounce = (GetSingleOutArea() / gesamtflaeche) * notp1;
 			}
 
 
@@ -408,26 +408,26 @@ namespace CheckApp
 		{
 			//p(check) = p1*p2*p3 + p1*!p2*p3 + p1*bounce*p3 + !p1*p2*p3 + !p1*bounce*p3 + !p1*!p2*p3 + bounce*p2*p3 + bounce*!p2*p3 + bounce*bounce*p3
 			CheckViewModel ret = new CheckViewModel(dart1, dart2, dart3, 0.0, 0.0, "");
-			double p1 = GetTrefferWahrscheinlichkeit(dart1);
-			double p2 = GetTrefferWahrscheinlichkeit(dart2);
-			double p3 = GetTrefferWahrscheinlichkeit(dart3);
+			double p1 = GetHitRatio(dart1);
+			double p2 = GetHitRatio(dart2);
+			double p3 = GetHitRatio(dart3);
 			ret.Check.Calculation = p1 * p2 * p3;
 			double notp1 = 1 - p1;
 			double pbounce = 0.0;
-			double gesamtflaeche = GetNeighbourFlaeche(dart1);
+			double fullArea = GetNeighbourArea(dart1);
 			List<Field> neighbours = GetNeighbourFields(dart1);
 			List<CheckViewModel> checks;
 
 			if (dart1.Type.Equals(FieldType.Double) && dart1.Score != 50)
-				pbounce = (GetSingleOutFlaeche() / gesamtflaeche) * notp1;
+				pbounce = (GetSingleOutArea() / fullArea) * notp1;
 
 			ret.Check.Propability = p1 * GetCheck(checkscore - dart1.Score, 2, dart2, dart3).Check.Propability;//p1*p2*p3 + p1*!p2*p3 + p1*bounce*p3
 			foreach (Field f in neighbours)
 			{
 				if (f.Score < checkscore - 1)
 				{
-					double danebenflaeche = GetNeighbourFieldFlaeche(dart1, f);
-					double pdaneben = notp1 * danebenflaeche / gesamtflaeche;
+					double danebenflaeche = GetNeighbourFieldArea(dart1, f);
+					double pdaneben = notp1 * danebenflaeche / fullArea;
 					int restscore = checkscore - f.Score;
 					checks = CalculateChecks(restscore, 2, null);
 					if (checks.Count > 0)
@@ -454,7 +454,7 @@ namespace CheckApp
 			return ret;
 		}
 
-		private double GetNeighbourFlaeche(Field f)
+		private double GetNeighbourArea(Field f)
 		{
 			double ret = 0.0;
 			switch (f.Type)
@@ -462,76 +462,76 @@ namespace CheckApp
 				case FieldType.Double:
 					if (f.Score == 50)
 					{
-						ret += GetSingleBullFlaeche();
-						ret += GetSingleInFlaeche() * 20 / 10;
+						ret += GetSingleBullArea();
+						ret += GetSingleInArea() * 20 / 10;
 					}
 					else
 					{
-						ret += GetSingleOutFlaeche() * 2; //single/2 + singleleft/4 + singleright/4 + gleiche fläche für bounce
-						ret += GetDoubleFlaeche(); //doubleleft/2 + doubleright/2
+						ret += GetSingleOutArea() * 2; //single/2 + singleleft/4 + singleright/4 + gleiche fläche für bounce
+						ret += GetDoubleArea(); //doubleleft/2 + doubleright/2
 					}
 					break;
 				case FieldType.Single:
 					if (f.Score == 25)
 					{
-						ret += GetDoubleBullFlaeche();
-						ret += GetSingleInFlaeche() * 20 / 10;
+						ret += GetDoubleBullArea();
+						ret += GetSingleInArea() * 20 / 10;
 					}
 					else
 					{
-						ret += GetSingleFlaeche() * 2;
-						ret += GetTripleFlaeche() * 3;
-						ret += GetDoubleFlaeche() * 3;
+						ret += GetSingleArea() * 2;
+						ret += GetTripleArea() * 3;
+						ret += GetDoubleArea() * 3;
 					}
 					break;
 				case FieldType.Triple:
-					ret += GetSingleFlaeche() / 2 * 3;
-					ret += GetTripleFlaeche() * 2; break;
+					ret += GetSingleArea() / 2 * 3;
+					ret += GetTripleArea() * 2; break;
 			}
 			return ret;
 		}
 
-		private double GetNeighbourFieldFlaeche(Field f, Field neighbour)
+		private double GetNeighbourFieldArea(Field f, Field neighbour)
 		{
-			double erg;
+			double res;
 			if (f.Score % 25 == 0)
 			{
 				if (neighbour.Type.Equals(FieldType.Double))
-					erg = GetDoubleBullFlaeche();
+					res = GetDoubleBullArea();
 				else if (neighbour.Score == 25)
-					erg = GetSingleBullFlaeche();
+					res = GetSingleBullArea();
 				else
-					erg = GetSingleInFlaeche() / 10;
+					res = GetSingleInArea() / 10;
 			}
 			else
 			{
 				if (f.Type.Equals(FieldType.Double))
 				{
 					if (neighbour.Type.Equals(FieldType.Double))
-						erg = GetDoubleFlaeche() / 2;
+						res = GetDoubleArea() / 2;
 					else if (neighbour.Score == f.Score / 2)
-						erg = GetSingleOutFlaeche() / 2;
+						res = GetSingleOutArea() / 2;
 					else
-						erg = GetSingleOutFlaeche() / 4;
+						res = GetSingleOutArea() / 4;
 				}
 				else if (f.Type.Equals(FieldType.Single))
 				{
 					if (neighbour.Type.Equals(FieldType.Single))
-						erg = GetSingleFlaeche();
+						res = GetSingleArea();
 					else if (neighbour.Type.Equals(FieldType.Double))
-						erg = GetDoubleFlaeche();
+						res = GetDoubleArea();
 					else
-						erg = GetTripleFlaeche();
+						res = GetTripleArea();
 				}
 				else
 				{
 					if (neighbour.Type.Equals(FieldType.Single))
-						erg = GetSingleFlaeche() / 2;
+						res = GetSingleArea() / 2;
 					else
-						erg = GetTripleFlaeche();
+						res = GetTripleArea();
 				}
 			}
-			return erg;
+			return res;
 		}
 		private List<Field> GetNeighbourFields(Field f)
 		{
@@ -583,7 +583,7 @@ namespace CheckApp
 			return ret;
 		}
 
-		private bool CheckNochMoeglich(Field dart1, Field dart2, int score)
+		private bool CanCheck(Field dart1, Field dart2, int score)
 		{
 			int erg = dart1.Score + dart2.Score;
 			bool ret = false;
@@ -596,7 +596,7 @@ namespace CheckApp
 			return ret;
 		}
 
-		private bool CheckNochMoeglich(Field dart1, int score)
+		private bool CanCheck(Field dart1, int score)
 		{
 			if (dart1.Score >= score)
 				return false;

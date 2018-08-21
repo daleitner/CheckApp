@@ -71,7 +71,7 @@ namespace CheckApp
 				par[5] = true;
 			}
 
-			_help = _calc.GetAllChecks(scores, leftdarts, worker, par);
+			_help = _calc.GetAllPossibleCheckouts(scores, leftdarts, worker, par);
 
 			foreach (var check in _help)
 			{
