@@ -1,0 +1,44 @@
+﻿<Window x:Class="CheckApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CheckApp" Height="400" Width="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+       
+        <Button Content="Calculate" Height="23" Margin="491,69,0,0" Name="button1" VerticalAlignment="Top" Command="{Binding Path=CalculateCommand}" HorizontalAlignment="Left" Width="75" />
+        <ScrollViewer HorizontalAlignment="Stretch" Name="scrollViewer1" VerticalAlignment="Stretch" Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Path=Solutions}" />
+        </ScrollViewer>
+        <Label Content="Checks:" Height="28" HorizontalAlignment="Right" Margin="0,0,38,0" Name="label2" VerticalAlignment="Center" Grid.Row="2" />
+        <Label Content="{Binding Path=CheckCnt}" Height="28" HorizontalAlignment="Right" Margin="0,0,17,0" Name="label3" VerticalAlignment="Center" Grid.Row="2" />
+        
+        <ProgressBar Visibility="{Binding Path=LoadVisibility}" Height="21" HorizontalAlignment="Left" Margin="89,0,0,0" Name="progressBar1" VerticalAlignment="Center" Width="124" Value="{Binding Path=CalculationProgress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="2" />
+        <Label Visibility="{Binding Path=LoadVisibility}" Content="Calculation:" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" Name="label5" VerticalAlignment="Center" Grid.Row="2" />
+        <GroupBox Header="Config" HorizontalAlignment="Left" Name="groupBox1" VerticalAlignment="Stretch" Width="470">
+            <Grid>
+                <Label Content="Score:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" />
+                <TextBox Height="23" HorizontalAlignment="Left" Margin="54,8,0,0" Name="textBox1" VerticalAlignment="Top" Width="49" Text="{Binding Path=Score}" />
+                <Label Content="Darts:" Height="28" HorizontalAlignment="Left" Margin="8,47,0,0" Name="label4" VerticalAlignment="Top" />
+                <ComboBox Height="23" HorizontalAlignment="Left" Margin="54,49,0,0" Name="textBox2" VerticalAlignment="Top" Width="49" ItemsSource="{Binding Path=LeftDarts}" SelectedItem="{Binding Path=LeftDartsSelected}"/>
+				<Label Content="Trefferquoten in % (Single,Double,Triple):" Height="28" HorizontalAlignment="Left" Margin="108,2,0,0" Name="label8" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}"/>
+				<TextBox Height="23" HorizontalAlignment="Left" Margin="333,4,0,0" Name="textBox3" VerticalAlignment="Top" Width="30" Text="{Binding Path=SingleQuote}" />
+				<TextBox Height="23" HorizontalAlignment="Left" Margin="375,4,0,0" Name="textBox4" VerticalAlignment="Top" Width="30" Text="{Binding Path=DoubleQuote}" />
+				<TextBox Height="23" HorizontalAlignment="Left" Margin="414,4,0,0" Name="textBox5" VerticalAlignment="Top" Width="30" Text="{Binding Path=TripleQuote}" />
+				<Label Content="Dart1:" Height="28" HorizontalAlignment="Left" Margin="169,28,0,0" Name="label6" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}"/>
+                <Label Content="Dart2:" Height="28" HorizontalAlignment="Left" Margin="169,50,0,0" Name="label7" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart2Enabled}" />
+                <CheckBox Content="Alle" Height="16" HorizontalAlignment="Left" Margin="217,33,0,0" Name="checkBox1" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}" IsChecked="{Binding Path=Dart1AlleChecked}" />
+                <CheckBox Content="Single" Height="16" HorizontalAlignment="Left" Margin="267,33,0,0" Name="checkBox2" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}" IsChecked="{Binding Path=Dart1SingleChecked}" />
+                <CheckBox Content="Double" Height="16" HorizontalAlignment="Left" Margin="325,33,0,0" Name="checkBox3" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}" IsChecked="{Binding Path=Dart1DoubleChecked}"/>
+                <CheckBox Content="Triple" Height="16" HorizontalAlignment="Left" Margin="395,33,0,0" Name="checkBox4" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}" IsChecked="{Binding Path=Dart1TripleChecked}"/>
+                <CheckBox Content="Alle" Height="16" HorizontalAlignment="Left" Margin="217,55,0,0" Name="checkBox5" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart2Enabled}" IsChecked="{Binding Path=Dart2AlleChecked}" />
+                <CheckBox Content="Single" Height="16" HorizontalAlignment="Left" Margin="267,55,0,0" Name="checkBox6" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart2Enabled}" IsChecked="{Binding Path=Dart2SingleChecked}" />
+                <CheckBox Content="Double" Height="16" HorizontalAlignment="Left" Margin="325,55,0,0" Name="checkBox7" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart2Enabled}" IsChecked="{Binding Path=Dart2DoubleChecked}"/>
+                <CheckBox Content="Triple" Height="16" HorizontalAlignment="Left" Margin="395,55,0,0" Name="checkBox8" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart2Enabled}" IsChecked="{Binding Path=Dart2TripleChecked}"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>
