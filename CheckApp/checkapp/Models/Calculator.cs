@@ -218,7 +218,7 @@ namespace CheckApp
 			double notp = 1 - p;
 			double pbounce = 0.0;
 			double gesamtflaeche = GetNeighbourArea(dart1); //gesamtfläche der nachbarfelder
-			List<Field> daneben = GetNeighbourFields(dart1);
+			List<Field> daneben = dart1.Neighbours;
 			double danebenflaeche;
 			int restscore;
 
@@ -290,7 +290,7 @@ namespace CheckApp
 			double pbounce = 0.0;
 			double gesamtflaeche = GetNeighbourArea(dart1);
 			List<CheckViewModel> checks = null;
-			List<Field> neighbours = GetNeighbourFields(dart1);
+			List<Field> neighbours = dart1.Neighbours;
 
 			if (dart1.Type == FieldType.Single && dart1.Score < 21)
 			{
@@ -415,7 +415,7 @@ namespace CheckApp
 			double notp1 = 1 - p1;
 			double pbounce = 0.0;
 			double fullArea = GetNeighbourArea(dart1);
-			List<Field> neighbours = GetNeighbourFields(dart1);
+			List<Field> neighbours = dart1.Neighbours;
 			List<CheckViewModel> checks;
 
 			if (dart1.Type.Equals(FieldType.Double) && dart1.Score != 50)
@@ -532,55 +532,6 @@ namespace CheckApp
 				}
 			}
 			return res;
-		}
-		private List<Field> GetNeighbourFields(Field f)
-		{
-			List<Field> ret = new List<Field>();
-			if (f.Score % 25 == 0)
-			{
-				ret.Add(_dBoard.GetLeft(f));
-
-				Field start = _dBoard.GetFirstField();
-				Field tmp = _dBoard.GetRight(start);
-				ret.Add(start);
-				while (tmp != start)
-				{
-					ret.Add(tmp);
-					tmp = _dBoard.GetRight(tmp);
-				}
-			}
-			else
-			{
-				if (f.Type.Equals(FieldType.Double))
-				{
-					Field single = _dBoard.GetSingle(f);
-					ret.Add(single);
-					ret.Add(_dBoard.GetLeft(single));
-					ret.Add(_dBoard.GetRight(single));
-					ret.Add(_dBoard.GetLeft(f));
-					ret.Add(_dBoard.GetRight(f));
-				}
-				else if (f.Type.Equals(FieldType.Single))
-				{
-					ret.Add(_dBoard.GetLeft(f));
-					ret.Add(_dBoard.GetRight(f));
-					ret.Add(_dBoard.GetTriple(f));
-					ret.Add(_dBoard.GetDouble(f));
-					ret.Add(_dBoard.GetTriple(_dBoard.GetLeft(f)));
-					ret.Add(_dBoard.GetTriple(_dBoard.GetRight(f)));
-					ret.Add(_dBoard.GetDouble(_dBoard.GetLeft(f)));
-					ret.Add(_dBoard.GetDouble(_dBoard.GetRight(f)));
-				}
-				else
-				{
-					ret.Add(_dBoard.GetSingle(f));
-					ret.Add(_dBoard.GetRight(_dBoard.GetSingle(f)));
-					ret.Add(_dBoard.GetLeft(_dBoard.GetSingle(f)));
-					ret.Add(_dBoard.GetLeft(f));
-					ret.Add(_dBoard.GetRight(f));
-				}
-			}
-			return ret;
 		}
 
 		private bool CanCheck(Field dart1, Field dart2, int score)
