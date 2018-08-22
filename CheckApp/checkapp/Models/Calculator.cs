@@ -36,7 +36,7 @@ namespace CheckApp
 			_tripleQuote = (double)tripleQuote / 100;
 			BullQuote = (_singleQuote + _doubleQuote) / 2;
 			DoubleBullQuote = _doubleQuote / 2;
-			_dBoard = new DartBoard();
+			_dBoard = new DartBoard(_singleQuote, _doubleQuote, _tripleQuote);
 
 			_checkchecks = new List<bool> { true, true, true, true, true, true };
 		}
@@ -218,7 +218,7 @@ namespace CheckApp
 			double notp = 1 - p;
 			double pbounce = 0.0;
 			double gesamtflaeche = GetNeighbourArea(dart1); //gesamtfläche der nachbarfelder
-			List<Field> daneben = dart1.Neighbours;
+			List<Field> daneben = dart1.Neighbours.Keys.ToList();
 			double danebenflaeche;
 			int restscore;
 
@@ -290,7 +290,7 @@ namespace CheckApp
 			double pbounce = 0.0;
 			double gesamtflaeche = GetNeighbourArea(dart1);
 			List<CheckViewModel> checks = null;
-			List<Field> neighbours = dart1.Neighbours;
+			List<Field> neighbours = dart1.Neighbours.Keys.ToList();
 
 			if (dart1.Type == FieldType.Single && dart1.Score < 21)
 			{
@@ -415,7 +415,7 @@ namespace CheckApp
 			double notp1 = 1 - p1;
 			double pbounce = 0.0;
 			double fullArea = GetNeighbourArea(dart1);
-			List<Field> neighbours = dart1.Neighbours;
+			List<Field> neighbours = dart1.Neighbours.Keys.ToList();
 			List<CheckViewModel> checks;
 
 			if (dart1.Type.Equals(FieldType.Double) && dart1.Score != 50)

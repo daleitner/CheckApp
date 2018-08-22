@@ -18,19 +18,22 @@ namespace CheckApp
 			Score = 0;
 			Difficulty = 0;
 			Type = FieldType.Single;
-			Neighbours = new List<Field>();
+			Neighbours = new Dictionary<Field, double>();
+			HitRatio = 0.0;
 		}
-		public Field(int score, int difficulty, FieldType type)
+		public Field(int score, int difficulty, FieldType type, double hitRatio)
 		{
 			Score = score;
 			Difficulty = difficulty;
 			Type = type;
-			Neighbours = new List<Field>();
+			Neighbours = new Dictionary<Field, double>();
+			HitRatio = hitRatio;
 		}
 
 		public int Score { get; set; }
 		public int Difficulty { get; set; }
 		public FieldType Type { get; set; }
-		public List<Field> Neighbours { get; set; }
+		public Dictionary<Field, double> Neighbours { get; set; }
+		public double HitRatio { get; set; }
 	}
 }
