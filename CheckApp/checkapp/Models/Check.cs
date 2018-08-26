@@ -42,6 +42,7 @@ namespace CheckApp
 		}
 		public string CheckString { get; set; }
 		public double Propability { get; set; }
+		public string PropabilityString => Propability + "%";
 		public double Calculation { get; set; }
 		public string Message { get; set; }
 		public Field CheckDart { get; set; }
