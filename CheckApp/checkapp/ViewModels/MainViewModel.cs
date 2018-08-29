@@ -113,7 +113,7 @@ namespace CheckApp
 						dart3 = check.Check.CheckDart;
 					}
 				}
-				Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.Calculation, check.Check.Message));
+				Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.Calculation, check.Check.Message, check.Check.SubChecks));
 			}
 			LoadVisibility = Visibility.Collapsed;
 			CalculationProgress = 0;

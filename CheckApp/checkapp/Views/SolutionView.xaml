@@ -9,8 +9,16 @@
 		<Label Content="{Binding Path=Check.PropabilityString}" Height="28" HorizontalAlignment="Left" Margin="180,2,0,0" Name="label4" VerticalAlignment="Top" />
 		<Expander Header="{Binding Path=Check.CheckString}" IsExpanded="False" Margin="10,4,0,0">
 			<Grid>
-				<Label Content="Message:" Height="28" HorizontalAlignment="Left" Margin="285,12,0,0" Name="label5" VerticalAlignment="Top" />
-				<Label Content="{Binding Path=Check.Message}" Height="28" HorizontalAlignment="Left" Margin="350,12,0,0" Name="label6" VerticalAlignment="Top" />
+				<ItemsControl ItemsSource="{Binding Path=Check.SubChecks}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<Label Content="{Binding Path=CheckString}"></Label>
+								<Label Content="{Binding Path=PropabilityString}"></Label>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
 			</Grid>
 		</Expander>
 

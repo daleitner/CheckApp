@@ -13,9 +13,10 @@ namespace CheckApp
 			Propability = 0;
 			Message = "";
 			Calculation = 0;
+			SubChecks = new List<Check>();
 		}
 
-		public Check(Field dart1, Field dart2, Field dart3, double propability, double calculation, string message)
+		public Check(Field dart1, Field dart2, Field dart3, double propability, double calculation, string message, List<Check> subChecks)
 		{
 			CheckString = GetCheckString(dart1, dart2, dart3);
 			if (dart2 == null)
@@ -39,6 +40,7 @@ namespace CheckApp
 			Propability = propability;
 			Calculation = calculation;
 			Message = message;
+			SubChecks = subChecks;
 		}
 		public string CheckString { get; set; }
 		public double Propability { get; set; }
@@ -48,6 +50,7 @@ namespace CheckApp
 		public Field CheckDart { get; set; }
 		public Field AufCheckDart { get; set; }
 		public Field ScoreDart { get; set; }
+		public List<Check> SubChecks { get; set; }
 
 		private string GetCheckString(Field dart1, Field dart2, Field dart3)
 		{

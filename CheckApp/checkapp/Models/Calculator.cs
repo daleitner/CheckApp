@@ -211,7 +211,7 @@ namespace CheckApp
 		private CheckViewModel GetCheck(int checkscore, int leftdarts, Field dart1)
 		{
 			double p = GetHitRatio(dart1);
-			CheckViewModel ret = new CheckViewModel(dart1, null, null, p, p, "");
+			CheckViewModel ret = new CheckViewModel(dart1, null, null, p, p, "", new List<Check>());
 			if (leftdarts == 1) //wenn nur 1 dart übrig
 				return ret;
 
@@ -269,7 +269,11 @@ namespace CheckApp
 						CheckViewModel easiestCheck = possiblechecks[0];
 						ret.Check.Propability += pdaneben * easiestCheck.Check.Propability;
 						if (dart1.Score % 25 != 0 || f.Score == 25 || f.Score == 50)
-							ret.Check.Message += "wenn " + ret.Check.FieldToString(f) + "->" + easiestCheck.Check.CheckString + "; ";
+						{
+							ret.Check.Message += "wenn " + ret.Check.FieldToString(f) + "->" +
+								easiestCheck.Check.CheckString + "; ";
+							ret.Check.SubChecks.Add(easiestCheck.Check);
+						}
 					}
 				}
 			}
@@ -282,7 +286,7 @@ namespace CheckApp
 			//p(check) = p1*p2 + bounce*p2 + !p1*p2 + bounce*p1*p2 + p1*bounce*p2 + !p1*bounce*p2 + bounce*!p1*p2 + !p1*p1*p2  + !p1*!p1*p2 + p1*!p2*p2
 			//2 darts
 			//p(check) = p1*p2 + bounce*p2 + !p1*p2
-			CheckViewModel ret = new CheckViewModel(dart1, dart2, null, 0.0, 0.0, "");
+			CheckViewModel ret = new CheckViewModel(dart1, dart2, null, 0.0, 0.0, "", new List<Check>());
 			double p1 = GetHitRatio(dart1);
 			double p2 = GetHitRatio(dart2);
 			ret.Check.Calculation = p1 * p2;
@@ -309,7 +313,11 @@ namespace CheckApp
 					{
 						ret.Check.Propability += pdaneben * checks[0].Check.Propability;
 						if (dart1.Score % 25 != 0 || f.Score == 25 || f.Score == 50)
-							ret.Check.Message += "wenn " + ret.Check.FieldToString(f) + "->" + checks[0].Check.CheckString + "; ";
+						{
+							ret.Check.Message += "wenn " + ret.Check.FieldToString(f) + "->" +
+								checks[0].Check.CheckString + "; ";
+							ret.Check.SubChecks.Add(checks[0].Check);
+						}
 					}
 				}
 			}
@@ -407,7 +415,7 @@ namespace CheckApp
 		private CheckViewModel GetCheck(int checkscore, Field dart1, Field dart2, Field dart3)
 		{
 			//p(check) = p1*p2*p3 + p1*!p2*p3 + p1*bounce*p3 + !p1*p2*p3 + !p1*bounce*p3 + !p1*!p2*p3 + bounce*p2*p3 + bounce*!p2*p3 + bounce*bounce*p3
-			CheckViewModel ret = new CheckViewModel(dart1, dart2, dart3, 0.0, 0.0, "");
+			CheckViewModel ret = new CheckViewModel(dart1, dart2, dart3, 0.0, 0.0, "", new List<Check>());
 			double p1 = GetHitRatio(dart1);
 			double p2 = GetHitRatio(dart2);
 			double p3 = GetHitRatio(dart3);
@@ -435,7 +443,11 @@ namespace CheckApp
 						CheckViewModel easiestcheck = checks[0];
 						ret.Check.Propability += pdaneben * easiestcheck.Check.Propability; //!p1*p2*p3 + !p1*bounce*p3 + !p1*!p2*p3
 						if (dart1.Score % 25 != 0 || f.Score == 25 || f.Score == 50)
-							ret.Check.Message += "wenn " + ret.Check.FieldToString(f) + "->" + easiestcheck.Check.CheckString + "; ";
+						{
+							ret.Check.Message += "wenn " + ret.Check.FieldToString(f) + "->" +
+								easiestcheck.Check.CheckString + "; ";
+							ret.Check.SubChecks.Add(easiestcheck.Check);
+						}
 					}
 				}
 			}
@@ -448,6 +460,7 @@ namespace CheckApp
 					CheckViewModel easiestcheck = checks[0];
 					ret.Check.Propability += pbounce * easiestcheck.Check.Propability; //bounce*p2*p3 + bounce*!p2*p3 + bounce*bounce*p3
 					ret.Check.Message += "wenn bounce->" + easiestcheck.Check.CheckString + "; ";
+					ret.Check.SubChecks.Add(easiestcheck.Check);
 				}
 			}
 
