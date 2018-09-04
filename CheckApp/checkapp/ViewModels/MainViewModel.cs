@@ -18,7 +18,7 @@ namespace CheckApp
 		private int _calculationProgress;
 		private readonly BackgroundWorker _worker;
 		private List<CheckViewModel> _help;
-		private Calculator _calc;
+		private NewCalculator _calc;
 		private Visibility _loadVisibility = Visibility.Collapsed;
 		private bool _dart1Enabled = true;
 		private bool _dart2Enabled = true;
@@ -43,7 +43,7 @@ namespace CheckApp
 			_worker.DoWork += worker_DoWork;
 			_worker.ProgressChanged += worker_ProgressChanged;
 			_worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-			_calc = new Calculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_doubleQuote));
+			//_calc = new Calculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_doubleQuote));
 			_leftDarts = new List<string> { "3", "2", "1" };
 			_leftDartsSelected = _leftDarts[0];
 		}
@@ -71,7 +71,7 @@ namespace CheckApp
 				par[5] = true;
 			}
 
-			_help = _calc.GetAllPossibleCheckouts(scores, leftdarts, worker, par);
+			_help = _calc.CalculateChecks(scores, leftdarts, worker, par);
 
 			foreach (var check in _help)
 			{
@@ -427,7 +427,7 @@ namespace CheckApp
 			LoadVisibility = Visibility.Visible;
 			if (!_worker.IsBusy)
 			{
-				_calc = new Calculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_doubleQuote));
+				_calc = new NewCalculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_tripleQuote));
 				_worker.RunWorkerAsync(_calc);
 			}
 		}
