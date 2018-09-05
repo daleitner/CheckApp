@@ -73,13 +73,20 @@ namespace CheckApp
 
 			_help = _calc.CalculateChecks(scores, leftdarts, worker, par);
 
-			foreach (var check in _help)
+			if (_help != null)
 			{
-				check.Check.Propability = Math.Round(check.Check.Propability * 100, 2);
-				check.Check.Calculation = Math.Round(check.Check.Calculation * 100, 2);
+				foreach (var check in _help)
+				{
+					check.Check.Propability = Math.Round(check.Check.Propability, 4);
+					check.Check.Calculation = Math.Round(check.Check.Calculation, 4);
+				}
+				CheckCnt = _help.Count;
 			}
-
-			CheckCnt = _help.Count;
+			else
+			{
+				CheckCnt = 0;
+			}
+			
 		}
 
 		void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -90,31 +97,37 @@ namespace CheckApp
 		void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			Solutions = new ObservableCollection<CheckViewModel>();
-			foreach (CheckViewModel check in _help)
+			if (_help != null)
 			{
-				Field dart1;
-				Field dart2 = null;
-				Field dart3 = null;
-				if (check.Check.AufCheckDart == null)
+				foreach (CheckViewModel check in _help)
 				{
-					dart1 = check.Check.CheckDart;
-				}
-				else
-				{
-					if (check.Check.ScoreDart == null)
+					Field dart1;
+					Field dart2 = null;
+					Field dart3 = null;
+					if (check.Check.AufCheckDart == null)
 					{
-						dart1 = check.Check.AufCheckDart;
-						dart2 = check.Check.CheckDart;
+						dart1 = check.Check.CheckDart;
 					}
 					else
 					{
-						dart1 = check.Check.ScoreDart;
-						dart2 = check.Check.AufCheckDart;
-						dart3 = check.Check.CheckDart;
+						if (check.Check.ScoreDart == null)
+						{
+							dart1 = check.Check.AufCheckDart;
+							dart2 = check.Check.CheckDart;
+						}
+						else
+						{
+							dart1 = check.Check.ScoreDart;
+							dart2 = check.Check.AufCheckDart;
+							dart3 = check.Check.CheckDart;
+						}
 					}
+
+					Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability,
+						check.Check.Calculation, check.Check.Message, check.Check.SubChecks));
 				}
-				Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.Calculation, check.Check.Message, check.Check.SubChecks));
 			}
+
 			LoadVisibility = Visibility.Collapsed;
 			CalculationProgress = 0;
 		}

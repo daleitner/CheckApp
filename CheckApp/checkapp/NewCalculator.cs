@@ -39,12 +39,45 @@ namespace CheckApp
 					if(check == null)
 						continue;
 
-					checks.Add(new CheckViewModel(field, check.Check.CheckDart, null, check.Check.Propability*field.HitRatio,
-						check.Check.Propability * field.HitRatio, "", null));
+					var prop = check.Check.Propability * field.HitRatio;
+					var subChecks = new List<Check>();
+					foreach (var neighbour in field.Neighbours.Keys)
+					{
+						var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth)
+							?.FirstOrDefault();
+						if(subCheck == null)
+							continue;
+						subCheck.Check.AufCheckDart = neighbour;
+						subCheck.Check.Propability = subCheck.Check.Propability * field.Neighbours[neighbour];
+						subCheck.Check.Calculation = subCheck.Check.Calculation * field.Neighbours[neighbour];
+						prop += subCheck.Check.Propability;
+						subChecks.Add(subCheck.Check);
+					}
+					var newCheck = new CheckViewModel(field, check.Check.CheckDart, null, prop, prop, "", subChecks);
+
+					checks.Add(newCheck);
 				}
-				if(IsAFinish(score, leftDarts-1))
-					checks.AddRange(CalculateChecks(score, leftDarts-1, worker, sth));
-				return checks;
+
+				if (IsAFinish(score, leftDarts - 1))
+				{
+					var oneDartFinish = CalculateChecks(score, leftDarts - 1, worker, sth).Single();
+					foreach (var neighbour in oneDartFinish.Check.CheckDart.Neighbours.Keys)
+					{
+						var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth)
+							?.FirstOrDefault();
+						if (subCheck == null)
+							continue;
+						subCheck.Check.AufCheckDart = neighbour;
+						subCheck.Check.Propability = subCheck.Check.Propability * oneDartFinish.Check.CheckDart.Neighbours[neighbour];
+						subCheck.Check.Calculation = subCheck.Check.Calculation * oneDartFinish.Check.CheckDart.Neighbours[neighbour];
+						oneDartFinish.Check.Propability += subCheck.Check.Propability;
+						oneDartFinish.Check.Calculation += subCheck.Check.Calculation;
+						oneDartFinish.Check.SubChecks.Add(subCheck.Check);
+					}
+					checks.Add(oneDartFinish);
+				}
+
+				return checks.OrderByDescending(x => x.Check.Propability).ToList();
 			}
 
 			var list = _dBoard.GetAllFields();
@@ -70,7 +103,7 @@ namespace CheckApp
 			}
 			if(IsAFinish(score, leftDarts-2))
 				checks.AddRange(CalculateChecks(score, leftDarts - 2, worker, sth));
-			return checks.OrderBy(x => x.Check.Propability).ToList();
+			return checks.OrderByDescending(x => x.Check.Propability).ToList();
 		}
 
 		private bool IsAFinish(int score, int leftDarts)
