@@ -67,8 +67,8 @@ namespace CheckApp
 				doubleFields[i].Neighbours.Add(singleFields[i], singleFields[i].HitRatio);
 				singleFields[i].Neighbours.Add(tripleFields[i], tripleFields[i].HitRatio);
 				tripleFields[i].Neighbours.Add(singleFields[i], singleFields[i].HitRatio);
-				singleBull.Neighbours.Add(singleFields[i], singleFields[i].HitRatio);
-				doubleBull.Neighbours.Add(singleFields[i], singleFields[i].HitRatio);
+				singleBull.Neighbours.Add(singleFields[i], (1-doubleBull.HitRatio)/20);
+				doubleBull.Neighbours.Add(singleFields[i], (1-singleBull.HitRatio)/20);
 				doubleFields[i].Neighbours.Add(outside, outside.HitRatio);
 			}
 

@@ -35,11 +35,23 @@ namespace CheckApp
 			{
 				foreach (var field in _dBoard.GetAllFields())
 				{
-					var check = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth)?.FirstOrDefault();
-					if(check == null)
-						continue;
+					CheckViewModel check;
+					var prop = 0.0;
+					var oneDartFinish = score == field.Score && field.Type == FieldType.Double;
+					if (oneDartFinish)
+					{
+						check = CalculateChecks(score, leftDarts - 1, worker, sth).Single();
+						prop = check.Check.Propability;
+					}
+					else
+					{
+						check = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth)?.FirstOrDefault();
+						if (check == null)
+							continue;
+						prop = check.Check.Propability * field.HitRatio;
+					}
 
-					var prop = check.Check.Propability * field.HitRatio;
+					
 					var subChecks = new List<Check>();
 					foreach (var neighbour in field.Neighbours.Keys)
 					{
@@ -54,27 +66,9 @@ namespace CheckApp
 						subChecks.Add(subCheck.Check);
 					}
 					var newCheck = new CheckViewModel(field, check.Check.CheckDart, null, prop, prop, "", subChecks);
-
+					if(oneDartFinish)
+						newCheck = new CheckViewModel(field, null, null, prop, prop, "", subChecks);
 					checks.Add(newCheck);
-				}
-
-				if (IsAFinish(score, leftDarts - 1))
-				{
-					var oneDartFinish = CalculateChecks(score, leftDarts - 1, worker, sth).Single();
-					foreach (var neighbour in oneDartFinish.Check.CheckDart.Neighbours.Keys)
-					{
-						var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth)
-							?.FirstOrDefault();
-						if (subCheck == null)
-							continue;
-						subCheck.Check.AufCheckDart = neighbour;
-						subCheck.Check.Propability = subCheck.Check.Propability * oneDartFinish.Check.CheckDart.Neighbours[neighbour];
-						subCheck.Check.Calculation = subCheck.Check.Calculation * oneDartFinish.Check.CheckDart.Neighbours[neighbour];
-						oneDartFinish.Check.Propability += subCheck.Check.Propability;
-						oneDartFinish.Check.Calculation += subCheck.Check.Calculation;
-						oneDartFinish.Check.SubChecks.Add(subCheck.Check);
-					}
-					checks.Add(oneDartFinish);
 				}
 
 				return checks.OrderByDescending(x => x.Check.Propability).ToList();
@@ -84,25 +78,84 @@ namespace CheckApp
 			for (var index = 0; index < list.Count; index++)
 			{
 				var field = list[index];
-				var twoDartChecks = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth);
-				if (twoDartChecks == null)
-					continue;
-				foreach (var twoDartCheck in twoDartChecks)
+				var oneDartFinish = score == field.Score && field.Type == FieldType.Double;
+				List<CheckViewModel> currentChecks;
+				var prop = 0.0;
+				if (oneDartFinish)
 				{
-					if(twoDartCheck.Check.AufCheckDart != null)
-						checks.Add(new CheckViewModel(field, twoDartCheck.Check.AufCheckDart, twoDartCheck.Check.CheckDart,
-							twoDartCheck.Check.Propability * field.HitRatio,
-							twoDartCheck.Check.Propability * field.HitRatio, "", null));
+					currentChecks = CalculateChecks(score, leftDarts - 2, worker, sth);
+				}
+				else
+				{
+					currentChecks = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth);
+					if (currentChecks == null)
+						continue;
+				}
+
+				var neighbourSubChecks = new List<Check>();
+				foreach (var neighbour in field.Neighbours.Keys)
+				{
+					var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth)
+						?.FirstOrDefault();
+					if (subCheck == null)
+						continue;
+					if (subCheck.Check.AufCheckDart == null)
+						subCheck.Check.AufCheckDart = neighbour;
 					else
-						checks.Add(new CheckViewModel(field, twoDartCheck.Check.CheckDart, null,
-							twoDartCheck.Check.Propability * field.HitRatio,
-							twoDartCheck.Check.Propability * field.HitRatio, "", null));
+						subCheck.Check.ScoreDart = neighbour;
+					subCheck.Check.Propability = subCheck.Check.Propability * field.Neighbours[neighbour];
+					subCheck.Check.Calculation = subCheck.Check.Calculation * field.Neighbours[neighbour];
+					prop += subCheck.Check.Propability;
+					neighbourSubChecks.Add(subCheck.Check);
+					subCheck.Check.SubChecks.ForEach(x =>
+					{
+						if (x.AufCheckDart == null)
+							x.AufCheckDart = neighbour;
+						else
+							x.ScoreDart = neighbour;
+						x.Propability = x.Propability * field.Neighbours[neighbour];
+						x.Calculation = x.Calculation * field.Neighbours[neighbour];
+					});
+					neighbourSubChecks.AddRange(subCheck.Check.SubChecks);
+				}
+
+				foreach (var currentCheck in currentChecks)
+				{
+					var subChecks = new List<Check>(neighbourSubChecks);
+					if (!oneDartFinish)
+					{
+						currentCheck.Check.SubChecks.ForEach(x =>
+						{
+							x.ScoreDart = field;
+							x.Propability = x.Propability * field.HitRatio;
+							x.Calculation = x.Calculation * field.HitRatio;
+						});
+						subChecks.AddRange(currentCheck.Check.SubChecks);
+					}
+						
+					if (oneDartFinish)
+					{
+						var propa = field.HitRatio + prop;
+						checks.Add(new CheckViewModel(field, null, null, propa, propa, "", subChecks));
+					}
+					else if (currentCheck.Check.AufCheckDart != null)
+					{
+						var propa = field.HitRatio * currentCheck.Check.AufCheckDart.HitRatio *
+									currentCheck.Check.CheckDart.HitRatio + prop;
+						checks.Add(new CheckViewModel(field, currentCheck.Check.AufCheckDart,
+							currentCheck.Check.CheckDart, propa, propa, "", subChecks));
+					}
+					else
+					{
+						var propa = field.HitRatio * currentCheck.Check.CheckDart.HitRatio + prop;
+						checks.Add(new CheckViewModel(field, currentCheck.Check.CheckDart, null,
+							propa, propa, "", subChecks));
+					}
 				}
 
 				worker.ReportProgress(index*100/list.Count);
 			}
-			if(IsAFinish(score, leftDarts-2))
-				checks.AddRange(CalculateChecks(score, leftDarts - 2, worker, sth));
+
 			return checks.OrderByDescending(x => x.Check.Propability).ToList();
 		}
 
