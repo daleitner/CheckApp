@@ -38,14 +38,65 @@ namespace CheckApp
 
 			var outside = new Field(0, Singled, FieldType.Single, 0.0);
 
+			var leftNeighbours = new List<Field>
+			{
+				singleFields[19],
+				singleFields[14],
+				singleFields[16],
+				singleFields[17],
+				singleFields[11],
+				singleFields[12],
+				singleFields[18],
+				singleFields[15],
+				singleFields[13],
+				singleFields[5],
+				singleFields[7],
+				singleFields[8],
+				singleFields[3],
+				singleFields[10],
+				singleFields[9],
+				singleFields[6],
+				singleFields[1],
+				singleFields[0],
+				singleFields[2],
+				singleFields[4],
+			};
+			var rightNeighbours = new List<Field>
+			{
+				singleFields[17],
+				singleFields[16],
+				singleFields[18],
+				singleFields[12],
+				singleFields[19],
+				singleFields[9],
+				singleFields[15],
+				singleFields[10],
+				singleFields[11],
+				singleFields[14],
+				singleFields[13],
+				singleFields[4],
+				singleFields[5],
+				singleFields[8],
+				singleFields[1],
+				singleFields[7],
+				singleFields[2],
+				singleFields[3],
+				singleFields[6],
+				singleFields[0],
+			};
+
 			for (int i = 0; i < doubleFields.Count; i++)
 			{
 				doubleFields[i].Neighbours.Add(singleFields[i], SingleWhenDoubleQuotes[i]);
 				doubleFields[i].Neighbours.Add(outside, OutsideWhenDoubleQuotes[i]);
 
 				singleFields[i].Neighbours.Add(tripleFields[i], TripleWhenSingleQuotes[i]);
+				singleFields[i].Neighbours.Add(leftNeighbours[i], LeftNeighbourWhenSingle[i]);
+				singleFields[i].Neighbours.Add(rightNeighbours[i], RightNeighbourWhenSingle[i]);
 
 				tripleFields[i].Neighbours.Add(singleFields[i], SingleWhenTripleQuotes[i]);
+				tripleFields[i].Neighbours.Add(leftNeighbours[i], LeftNeighbourWhenTriple[i]);
+				tripleFields[i].Neighbours.Add(rightNeighbours[i], RightNeighbourWhenTriple[i]);
 
 				singleBull.Neighbours.Add(singleFields[i], (1-singleBull.HitRatio - doubleBull.HitRatio)/20);
 				doubleBull.Neighbours.Add(singleFields[i], (1-doubleBull.HitRatio - singleBull.HitRatio)/20);
@@ -55,87 +106,6 @@ namespace CheckApp
 			singleBull.Neighbours.Add(doubleBull, doubleBull.HitRatio);
 			doubleBull.Neighbours.Add(singleBull, singleBull.HitRatio);
 
-			singleFields[0].Neighbours.Add(singleFields[19],  (1-singleFields[19].HitRatio-0.05)/2);
-			singleFields[0].Neighbours.Add(singleFields[17],  (1-singleFields[17].HitRatio-0.05)/2);
-			singleFields[1].Neighbours.Add(singleFields[16],  (1-singleFields[16].HitRatio-0.05)/2);
-			singleFields[1].Neighbours.Add(singleFields[14],  (1-singleFields[14].HitRatio-0.05)/2);
-			singleFields[2].Neighbours.Add(singleFields[18],  (1-singleFields[18].HitRatio-0.05)/2);
-			singleFields[2].Neighbours.Add(singleFields[16],  (1-singleFields[16].HitRatio-0.05)/2);
-			singleFields[3].Neighbours.Add(singleFields[17],  (1-singleFields[17].HitRatio-0.05)/2);
-			singleFields[3].Neighbours.Add(singleFields[12],  (1-singleFields[12].HitRatio-0.05)/2);
-			singleFields[4].Neighbours.Add(singleFields[19],  (1-singleFields[19].HitRatio-0.05)/2);
-			singleFields[4].Neighbours.Add(singleFields[11],  (1-singleFields[11].HitRatio-0.05)/2);
-			singleFields[5].Neighbours.Add(singleFields[12],  (1-singleFields[12].HitRatio-0.05)/2);
-			singleFields[5].Neighbours.Add(singleFields[9],   (1-singleFields[9].HitRatio -0.05)/2);
-			singleFields[6].Neighbours.Add(singleFields[18],  (1-singleFields[18].HitRatio-0.05)/2);
-			singleFields[6].Neighbours.Add(singleFields[15],  (1-singleFields[15].HitRatio-0.05)/2);
-			singleFields[7].Neighbours.Add(singleFields[15],  (1-singleFields[15].HitRatio-0.05)/2);
-			singleFields[7].Neighbours.Add(singleFields[10],  (1-singleFields[10].HitRatio-0.05)/2);
-			singleFields[8].Neighbours.Add(singleFields[11],  (1-singleFields[11].HitRatio-0.05)/2);
-			singleFields[8].Neighbours.Add(singleFields[13],  (1-singleFields[13].HitRatio-0.05)/2);
-			singleFields[9].Neighbours.Add(singleFields[14],  (1-singleFields[14].HitRatio-0.05)/2);
-			singleFields[9].Neighbours.Add(singleFields[5],   (1-singleFields[5].HitRatio -0.05)/2);
-			singleFields[10].Neighbours.Add(singleFields[13], (1-singleFields[13].HitRatio-0.05)/2);
-			singleFields[10].Neighbours.Add(singleFields[7],  (1-singleFields[7].HitRatio -0.05)/2);
-			singleFields[11].Neighbours.Add(singleFields[4],  (1-singleFields[4].HitRatio -0.05)/2);
-			singleFields[11].Neighbours.Add(singleFields[8],  (1-singleFields[8].HitRatio -0.05)/2);
-			singleFields[12].Neighbours.Add(singleFields[5],  (1-singleFields[5].HitRatio -0.05)/2);
-			singleFields[12].Neighbours.Add(singleFields[3],  (1-singleFields[3].HitRatio -0.05)/2);
-			singleFields[13].Neighbours.Add(singleFields[10], (1-singleFields[10].HitRatio-0.05)/2);
-			singleFields[13].Neighbours.Add(singleFields[8],  (1-singleFields[8].HitRatio -0.05)/2);
-			singleFields[14].Neighbours.Add(singleFields[9],  (1-singleFields[9].HitRatio -0.05)/2);
-			singleFields[14].Neighbours.Add(singleFields[1],  (1-singleFields[1].HitRatio -0.05)/2);
-			singleFields[15].Neighbours.Add(singleFields[6],  (1-singleFields[6].HitRatio -0.05)/2);
-			singleFields[15].Neighbours.Add(singleFields[7],  (1-singleFields[7].HitRatio -0.05)/2);
-			singleFields[16].Neighbours.Add(singleFields[2],  (1-singleFields[2].HitRatio -0.05)/2);
-			singleFields[16].Neighbours.Add(singleFields[1],  (1-singleFields[1].HitRatio -0.05)/2);
-			singleFields[17].Neighbours.Add(singleFields[0],  (1-singleFields[0].HitRatio -0.05)/2);
-			singleFields[17].Neighbours.Add(singleFields[3],  (1-singleFields[3].HitRatio -0.05)/2);
-			singleFields[18].Neighbours.Add(singleFields[6],  (1-singleFields[6].HitRatio -0.05)/2);
-			singleFields[18].Neighbours.Add(singleFields[2],  (1-singleFields[2].HitRatio -0.05)/2);
-			singleFields[19].Neighbours.Add(singleFields[0],  (1-singleFields[0].HitRatio -0.05)/2);
-			singleFields[19].Neighbours.Add(singleFields[4],  (1-singleFields[4].HitRatio -0.05)/2);
-
-			tripleFields[0].Neighbours.Add(singleFields[19], (1 - singleFields[19].HitRatio - 0.1) / 2);
-			tripleFields[0].Neighbours.Add(singleFields[17], (1 - singleFields[17].HitRatio - 0.1) / 2);
-			tripleFields[1].Neighbours.Add(singleFields[16], (1 - singleFields[16].HitRatio - 0.1) / 2);
-			tripleFields[1].Neighbours.Add(singleFields[14], (1 - singleFields[14].HitRatio - 0.1) / 2);
-			tripleFields[2].Neighbours.Add(singleFields[18], (1 - singleFields[18].HitRatio - 0.1) / 2);
-			tripleFields[2].Neighbours.Add(singleFields[16], (1 - singleFields[16].HitRatio - 0.1) / 2);
-			tripleFields[3].Neighbours.Add(singleFields[17], (1 - singleFields[17].HitRatio - 0.1) / 2);
-			tripleFields[3].Neighbours.Add(singleFields[12], (1 - singleFields[12].HitRatio - 0.1) / 2);
-			tripleFields[4].Neighbours.Add(singleFields[19], (1 - singleFields[19].HitRatio - 0.1) / 2);
-			tripleFields[4].Neighbours.Add(singleFields[11], (1 - singleFields[11].HitRatio - 0.1) / 2);
-			tripleFields[5].Neighbours.Add(singleFields[12], (1 - singleFields[12].HitRatio - 0.1) / 2);
-			tripleFields[5].Neighbours.Add(singleFields[9],  (1 - singleFields[9].HitRatio -  0.1) / 2);
-			tripleFields[6].Neighbours.Add(singleFields[18], (1 - singleFields[18].HitRatio - 0.1) / 2);
-			tripleFields[6].Neighbours.Add(singleFields[15], (1 - singleFields[15].HitRatio - 0.1) / 2);
-			tripleFields[7].Neighbours.Add(singleFields[15], (1 - singleFields[15].HitRatio - 0.1) / 2);
-			tripleFields[7].Neighbours.Add(singleFields[10], (1 - singleFields[10].HitRatio - 0.1) / 2);
-			tripleFields[8].Neighbours.Add(singleFields[11], (1 - singleFields[11].HitRatio - 0.1) / 2);
-			tripleFields[8].Neighbours.Add(singleFields[13], (1 - singleFields[13].HitRatio - 0.1) / 2);
-			tripleFields[9].Neighbours.Add(singleFields[14], (1 - singleFields[14].HitRatio - 0.1) / 2);
-			tripleFields[9].Neighbours.Add(singleFields[5],  (1 - singleFields[5].HitRatio -  0.1) / 2);
-			tripleFields[10].Neighbours.Add(singleFields[13],(1 - singleFields[13].HitRatio - 0.1) / 2);
-			tripleFields[10].Neighbours.Add(singleFields[7], (1 - singleFields[7].HitRatio -  0.1) / 2);
-			tripleFields[11].Neighbours.Add(singleFields[4], (1 - singleFields[4].HitRatio -  0.1) / 2);
-			tripleFields[11].Neighbours.Add(singleFields[8], (1 - singleFields[8].HitRatio -  0.1) / 2);
-			tripleFields[12].Neighbours.Add(singleFields[5], (1 - singleFields[5].HitRatio -  0.1) / 2);
-			tripleFields[12].Neighbours.Add(singleFields[3], (1 - singleFields[3].HitRatio -  0.1) / 2);
-			tripleFields[13].Neighbours.Add(singleFields[10],(1 - singleFields[10].HitRatio - 0.1) / 2);
-			tripleFields[13].Neighbours.Add(singleFields[8], (1 - singleFields[8].HitRatio -  0.1) / 2);
-			tripleFields[14].Neighbours.Add(singleFields[9], (1 - singleFields[9].HitRatio -  0.1) / 2);
-			tripleFields[14].Neighbours.Add(singleFields[1], (1 - singleFields[1].HitRatio -  0.1) / 2);
-			tripleFields[15].Neighbours.Add(singleFields[6], (1 - singleFields[6].HitRatio -  0.1) / 2);
-			tripleFields[15].Neighbours.Add(singleFields[7], (1 - singleFields[7].HitRatio -  0.1) / 2);
-			tripleFields[16].Neighbours.Add(singleFields[2], (1 - singleFields[2].HitRatio -  0.1) / 2);
-			tripleFields[16].Neighbours.Add(singleFields[1], (1 - singleFields[1].HitRatio -  0.1) / 2);
-			tripleFields[17].Neighbours.Add(singleFields[0], (1 - singleFields[0].HitRatio -  0.1) / 2);
-			tripleFields[17].Neighbours.Add(singleFields[3], (1 - singleFields[3].HitRatio -  0.1) / 2);
-			tripleFields[18].Neighbours.Add(singleFields[6], (1 - singleFields[6].HitRatio -  0.1) / 2);
-			tripleFields[18].Neighbours.Add(singleFields[2], (1 - singleFields[2].HitRatio -  0.1) / 2);
-			tripleFields[19].Neighbours.Add(singleFields[0], (1 - singleFields[0].HitRatio -  0.1) / 2);
-			tripleFields[19].Neighbours.Add(singleFields[4], (1 - singleFields[4].HitRatio -  0.1) / 2);
 			_dartBoard.AddRange(singleFields);
 			_dartBoard.AddRange(doubleFields);
 			_dartBoard.AddRange(tripleFields);
@@ -321,6 +291,102 @@ namespace CheckApp
 			0.55,
 			0.55,
 			0.55
+		};
+
+		private static readonly List<double> LeftNeighbourWhenSingle = new List<double>
+		{
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20
+		};
+
+		private static readonly List<double> RightNeighbourWhenSingle = new List<double>
+		{
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20,
+			0.20
+		};
+
+		private static readonly List<double> LeftNeighbourWhenTriple = new List<double>
+		{
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175
+		};
+
+		private static readonly List<double> RightNeighbourWhenTriple = new List<double>
+		{
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175,
+			0.175
 		};
 	}
 }
