@@ -7,69 +7,49 @@ namespace CheckApp
 	{
 		private List<Field> _dartBoard;
 
-		private readonly List<int> _doubled = new List<int> { 1, 2, 3, 4 };
+		private const int Doubled =  1;
 		private const int Tripled = 1;
 		private const int Singled = 1;
 		private const int Bulld = 1;
 		private const int Doublebulld = 1;
 
-		public DartBoard(double singleQuote, double doubleQuote, double tripleQuote)
+		public DartBoard()
 		{
-			InitializeDartboard(singleQuote, doubleQuote, tripleQuote);
+			InitializeDartboard();
 		}
 
 
-		private void InitializeDartboard(double singleQuote, double doubleQuote, double tripleQuote)
+		private void InitializeDartboard()
 		{
 			_dartBoard = new List<Field>();
 
-			var doubleFields = new List<Field>
-			{
-				new Field(2, _doubled[3], FieldType.Double, doubleQuote),
-				new Field(4, _doubled[1], FieldType.Double, doubleQuote),
-				new Field(6, _doubled[3], FieldType.Double, doubleQuote),
-				new Field(8, _doubled[0], FieldType.Double, doubleQuote),
-				new Field(10, _doubled[3], FieldType.Double, doubleQuote),
-				new Field(12, _doubled[1], FieldType.Double, doubleQuote),
-				new Field(14, _doubled[3], FieldType.Double, doubleQuote),
-				new Field(16, _doubled[0], FieldType.Double, doubleQuote),
-				new Field(18, _doubled[3], FieldType.Double, doubleQuote),
-				new Field(20, _doubled[1], FieldType.Double, doubleQuote),
-				new Field(22, _doubled[2], FieldType.Double, doubleQuote),
-				new Field(24, _doubled[0], FieldType.Double, doubleQuote),
-				new Field(26, _doubled[2], FieldType.Double, doubleQuote),
-				new Field(28, _doubled[1], FieldType.Double, doubleQuote),
-				new Field(30, _doubled[2], FieldType.Double, doubleQuote),
-				new Field(32, _doubled[0], FieldType.Double, doubleQuote),
-				new Field(34, _doubled[2], FieldType.Double, doubleQuote),
-				new Field(36, _doubled[1], FieldType.Double, doubleQuote),
-				new Field(38, _doubled[2], FieldType.Double, doubleQuote),
-				new Field(40, _doubled[0], FieldType.Double, doubleQuote),
-			};
 			var singleFields = new List<Field>();
-			foreach (Field f in doubleFields)
-			{
-				singleFields.Add(new Field(f.Score / 2, Singled, FieldType.Single, singleQuote));
-			}
-			
+			var doubleFields = new List<Field>();
 			var tripleFields = new List<Field>();
-			foreach (Field f in singleFields)
+			for (var i = 1; i <= 20; i++)
 			{
-				tripleFields.Add(new Field(f.Score * 3, Tripled, FieldType.Triple, tripleQuote));
+				singleFields.Add(new Field(i, Singled, FieldType.Single, SingleQuotes[i-1]));
+				doubleFields.Add(new Field(i * 2, Doubled, FieldType.Double, DoubleQuotes[i-1]));
+				tripleFields.Add(new Field(i * 3, Tripled, FieldType.Triple, TripleQuotes[i-1]));
 			}
-			
-			var singleBull = new Field(25, Bulld, FieldType.Single, 0.2);
-			var doubleBull = new Field(50, Doublebulld, FieldType.Double, tripleQuote);
-			var outside = new Field(0, Singled, FieldType.Single, (1-doubleQuote)/2);
+
+			var singleBull = new Field(25, Bulld, FieldType.Single, SingleBullQuote);
+			var doubleBull = new Field(50, Doublebulld, FieldType.Double, DoubleBullQuote);
+
+			var outside = new Field(0, Singled, FieldType.Single, 0.0);
 
 			for (int i = 0; i < doubleFields.Count; i++)
 			{
-				doubleFields[i].Neighbours.Add(singleFields[i], (1 - doubleQuote) / 2);
-				singleFields[i].Neighbours.Add(tripleFields[i], tripleFields[i].HitRatio/2);
-				tripleFields[i].Neighbours.Add(singleFields[i], singleFields[i].HitRatio);
+				doubleFields[i].Neighbours.Add(singleFields[i], SingleWhenDoubleQuotes[i]);
+				doubleFields[i].Neighbours.Add(outside, OutsideWhenDoubleQuotes[i]);
+
+				singleFields[i].Neighbours.Add(tripleFields[i], TripleWhenSingleQuotes[i]);
+
+				tripleFields[i].Neighbours.Add(singleFields[i], SingleWhenTripleQuotes[i]);
+
 				singleBull.Neighbours.Add(singleFields[i], (1-singleBull.HitRatio - doubleBull.HitRatio)/20);
 				doubleBull.Neighbours.Add(singleFields[i], (1-doubleBull.HitRatio - singleBull.HitRatio)/20);
-				doubleFields[i].Neighbours.Add(outside, outside.HitRatio);
+				
 			}
 
 			singleBull.Neighbours.Add(doubleBull, doubleBull.HitRatio);
@@ -173,5 +153,174 @@ namespace CheckApp
 		{
 			return _dartBoard.Where(x => x.Type == FieldType.Double).ToList();
 		}
+
+		private static readonly List<double> SingleQuotes = new List<double>
+		{
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55
+		};
+		private static readonly List<double> DoubleQuotes = new List<double>
+		{
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15,
+			0.15
+		};
+		private static readonly List<double> TripleQuotes = new List<double>
+		{
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10,
+			0.10
+		};
+
+		private static readonly double SingleBullQuote = 0.20;
+		private static readonly double DoubleBullQuote = 0.10;
+
+		private static readonly List<double> SingleWhenDoubleQuotes = new List<double>
+		{
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425
+		};
+
+		private static readonly List<double> OutsideWhenDoubleQuotes = new List<double>
+		{
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425,
+			0.425
+		};
+
+		private static readonly List<double> TripleWhenSingleQuotes = new List<double>
+		{
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05,
+			0.05
+		};
+
+		private static readonly List<double> SingleWhenTripleQuotes = new List<double>
+		{
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55,
+			0.55
+		};
 	}
 }

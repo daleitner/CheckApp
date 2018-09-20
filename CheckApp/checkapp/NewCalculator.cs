@@ -9,15 +9,10 @@ namespace CheckApp
 	public class NewCalculator
 	{
 		private readonly DartBoard _dBoard;
-		private readonly double _singleQuote;
-		private readonly double _doubleQuote;
-		private readonly double _tripleQuote;
-		public NewCalculator(int singleQuote, int doubleQuote, int tripleQuote)
+
+		public NewCalculator()
 		{
-			_singleQuote = (double)singleQuote / 100;
-			_doubleQuote = (double)doubleQuote / 100;
-			_tripleQuote = (double)tripleQuote / 100;
-			_dBoard = new DartBoard(_singleQuote, _doubleQuote, _tripleQuote);
+			_dBoard = new DartBoard();
 		}
 
 		public List<CheckViewModel> CalculateChecks(int score, int leftDarts, BackgroundWorker worker, List<bool> sth)

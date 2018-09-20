@@ -36,7 +36,7 @@ namespace CheckApp
 			_tripleQuote = (double)tripleQuote / 100;
 			BullQuote = (_singleQuote + _doubleQuote) / 2;
 			DoubleBullQuote = _doubleQuote / 2;
-			_dBoard = new DartBoard(_singleQuote, _doubleQuote, _tripleQuote);
+			_dBoard = new DartBoard();
 
 			_checkchecks = new List<bool> { true, true, true, true, true, true };
 		}

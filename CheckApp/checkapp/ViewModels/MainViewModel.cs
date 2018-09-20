@@ -440,7 +440,7 @@ namespace CheckApp
 			LoadVisibility = Visibility.Visible;
 			if (!_worker.IsBusy)
 			{
-				_calc = new NewCalculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_tripleQuote));
+				_calc = new NewCalculator();
 				_worker.RunWorkerAsync(_calc);
 			}
 		}
