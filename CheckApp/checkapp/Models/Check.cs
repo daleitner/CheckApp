@@ -45,7 +45,7 @@ namespace CheckApp
 
 		public string CheckString => GetCheckString();
 		public double Propability { get; set; }
-		public string PropabilityString => Propability * 100 + "%";
+		public string PropabilityString => Math.Round(Propability * 100, 2) + "%";
 		public double Calculation { get; set; }
 		public string Message { get; set; }
 		public Field CheckDart { get; set; }
