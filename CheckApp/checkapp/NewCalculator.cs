@@ -121,6 +121,7 @@ namespace CheckApp
 
 				foreach (var currentCheck in currentChecks)
 				{
+					var propx = prop;
 					var subChecks = new List<Check>(neighbourSubChecks);
 					if (!oneDartFinish)
 					{
@@ -129,25 +130,26 @@ namespace CheckApp
 							x.ScoreDart = field;
 							x.Propability = x.Propability * field.HitRatio;
 							x.Calculation = x.Calculation * field.HitRatio;
+							propx += x.Propability;
 						});
 						subChecks.AddRange(currentCheck.Check.SubChecks);
 					}
 						
 					if (oneDartFinish)
 					{
-						var propa = field.HitRatio + prop;
+						var propa = field.HitRatio + propx;
 						checks.Add(new CheckViewModel(field, null, null, propa, propa, "", subChecks));
 					}
 					else if (currentCheck.Check.AufCheckDart != null)
 					{
 						var propa = field.HitRatio * currentCheck.Check.AufCheckDart.HitRatio *
-									currentCheck.Check.CheckDart.HitRatio + prop;
+									currentCheck.Check.CheckDart.HitRatio + propx;
 						checks.Add(new CheckViewModel(field, currentCheck.Check.AufCheckDart,
 							currentCheck.Check.CheckDart, propa, propa, "", subChecks));
 					}
 					else
 					{
-						var propa = field.HitRatio * currentCheck.Check.CheckDart.HitRatio + prop;
+						var propa = field.HitRatio * currentCheck.Check.CheckDart.HitRatio + propx;
 						checks.Add(new CheckViewModel(field, currentCheck.Check.CheckDart, null,
 							propa, propa, "", subChecks));
 					}
