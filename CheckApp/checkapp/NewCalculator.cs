@@ -84,7 +84,10 @@ namespace CheckApp
 				{
 					currentChecks = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth);
 					if (currentChecks == null)
+					{
+						worker.ReportProgress(index * 100 / list.Count);
 						continue;
+					}
 				}
 
 				var neighbourSubChecks = new List<Check>();

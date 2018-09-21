@@ -73,19 +73,7 @@ namespace CheckApp
 
 			_help = _calc.CalculateChecks(scores, leftdarts, worker, par);
 
-			if (_help != null)
-			{
-				foreach (var check in _help)
-				{
-					check.Check.Propability = Math.Round(check.Check.Propability, 4);
-					check.Check.Calculation = Math.Round(check.Check.Calculation, 4);
-				}
-				CheckCnt = _help.Count;
-			}
-			else
-			{
-				CheckCnt = 0;
-			}
+			CheckCnt = _help?.Count ?? 0;
 			
 		}
 
