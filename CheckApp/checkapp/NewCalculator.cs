@@ -9,10 +9,26 @@ namespace CheckApp
 	public class NewCalculator
 	{
 		private readonly DartBoard _dBoard;
-
 		public NewCalculator()
 		{
 			_dBoard = new DartBoard();
+		}
+
+		public List<CheckViewModel> CalculateAll(BackgroundWorker worker)
+		{
+			List<CheckViewModel> checks = new List<CheckViewModel>();
+			for (int i = 1; i <= 170; i++)
+			{
+				var current = CalculateChecks(i, 3, null, null);
+				if (current == null)
+					continue;
+
+				checks.Add(current.First());
+
+				worker.ReportProgress(i*100/170);
+			}
+
+			return checks;
 		}
 
 		public List<CheckViewModel> CalculateChecks(int score, int leftDarts, BackgroundWorker worker, List<bool> sth)
@@ -85,7 +101,7 @@ namespace CheckApp
 					currentChecks = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth);
 					if (currentChecks == null)
 					{
-						worker.ReportProgress(index * 100 / list.Count);
+						worker?.ReportProgress(index * 100 / list.Count);
 						continue;
 					}
 				}
@@ -153,7 +169,7 @@ namespace CheckApp
 					}
 				}
 
-				worker.ReportProgress(index*100/list.Count);
+				worker?.ReportProgress(index*100/list.Count);
 			}
 
 			return checks.OrderByDescending(x => x.Check.Propability).ToList();

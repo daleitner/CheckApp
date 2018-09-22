@@ -14,6 +14,7 @@ namespace CheckApp
 		private string _leftDartsSelected;
 		private ObservableCollection<CheckViewModel> _solutions;
 		private RelayCommand _calculateCommand;
+		private RelayCommand _calculateAllCommand;
 		private int _checkCnt;
 		private int _calculationProgress;
 		private readonly BackgroundWorker _worker;
@@ -33,6 +34,8 @@ namespace CheckApp
 		private string _singleQuote = "55";
 		private string _doubleQuote = "15";
 		private string _tripleQuote = "10";
+		private bool _runAll;
+
 		public MainViewModel()
 		{
 			_worker = new BackgroundWorker
@@ -51,27 +54,41 @@ namespace CheckApp
 		void worker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			var worker = (BackgroundWorker)sender;
-			int scores;
-			if (!int.TryParse(Score, out scores))
-				return;
-
-			int leftdarts;
-			int.TryParse(LeftDartsSelected, out leftdarts);
-			var par = new List<bool> { Dart1SingleChecked, Dart1DoubleChecked, Dart1TripleChecked, Dart2SingleChecked, Dart2DoubleChecked, Dart2TripleChecked };
-			if (Dart1AlleChecked || !Dart1Enabled)
+			if (_runAll)
+				_help = _calc.CalculateAll(worker);
+			else
 			{
-				par[0] = true;
-				par[1] = true;
-				par[2] = true;
-			}
-			if (Dart2AlleChecked || !Dart2Enabled)
-			{
-				par[3] = true;
-				par[4] = true;
-				par[5] = true;
-			}
+				int scores;
+				if (!int.TryParse(Score, out scores))
+					return;
 
-			_help = _calc.CalculateChecks(scores, leftdarts, worker, par);
+				int leftdarts;
+				int.TryParse(LeftDartsSelected, out leftdarts);
+				var par = new List<bool>
+				{
+					Dart1SingleChecked,
+					Dart1DoubleChecked,
+					Dart1TripleChecked,
+					Dart2SingleChecked,
+					Dart2DoubleChecked,
+					Dart2TripleChecked
+				};
+				if (Dart1AlleChecked || !Dart1Enabled)
+				{
+					par[0] = true;
+					par[1] = true;
+					par[2] = true;
+				}
+
+				if (Dart2AlleChecked || !Dart2Enabled)
+				{
+					par[3] = true;
+					par[4] = true;
+					par[5] = true;
+				}
+
+				_help = _calc.CalculateChecks(scores, leftdarts, worker, par);
+			}
 
 			CheckCnt = _help?.Count ?? 0;
 			
@@ -416,15 +433,30 @@ namespace CheckApp
 				if (_calculateCommand == null)
 				{
 					_calculateCommand = new RelayCommand(
-						param => StartWorker()
+						param => StartWorker(false)
 							);
 				}
 				return _calculateCommand;
 			}
 		}
 
-		public void StartWorker()
+		public ICommand CalculateAllCommand
 		{
+			get
+			{
+				if (_calculateAllCommand == null)
+				{
+					_calculateAllCommand = new RelayCommand(
+						param => StartWorker(true)
+					);
+				}
+				return _calculateAllCommand;
+			}
+		}
+
+		public void StartWorker(bool runAll)
+		{
+			_runAll = runAll;
 			LoadVisibility = Visibility.Visible;
 			if (!_worker.IsBusy)
 			{

@@ -9,7 +9,8 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
        
-        <Button Content="Calculate" Height="23" Margin="491,69,0,0" Name="button1" VerticalAlignment="Top" Command="{Binding Path=CalculateCommand}" HorizontalAlignment="Left" Width="75" />
+        <Button Content="Calculate" Height="23" Margin="491,35,0,0" Name="button1" VerticalAlignment="Top" Command="{Binding Path=CalculateCommand}" HorizontalAlignment="Left" Width="75" />
+		<Button Content="Calculate All" Height="23" Margin="491,69,0,0" Name="button2" VerticalAlignment="Top" Command="{Binding Path=CalculateAllCommand}" HorizontalAlignment="Left" Width="75" />
         <ScrollViewer HorizontalAlignment="Stretch" Name="scrollViewer1" VerticalAlignment="Stretch" Grid.Row="1">
             <ItemsControl ItemsSource="{Binding Path=Solutions}" />
         </ScrollViewer>
@@ -24,10 +25,6 @@
                 <TextBox Height="23" HorizontalAlignment="Left" Margin="54,8,0,0" Name="textBox1" VerticalAlignment="Top" Width="49" Text="{Binding Path=Score}" />
                 <Label Content="Darts:" Height="28" HorizontalAlignment="Left" Margin="8,47,0,0" Name="label4" VerticalAlignment="Top" />
                 <ComboBox Height="23" HorizontalAlignment="Left" Margin="54,49,0,0" Name="textBox2" VerticalAlignment="Top" Width="49" ItemsSource="{Binding Path=LeftDarts}" SelectedItem="{Binding Path=LeftDartsSelected}"/>
-				<Label Content="Trefferquoten in % (Single,Double,Triple):" Height="28" HorizontalAlignment="Left" Margin="108,2,0,0" Name="label8" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}"/>
-				<TextBox Height="23" HorizontalAlignment="Left" Margin="333,4,0,0" Name="textBox3" VerticalAlignment="Top" Width="30" Text="{Binding Path=SingleQuote}" />
-				<TextBox Height="23" HorizontalAlignment="Left" Margin="375,4,0,0" Name="textBox4" VerticalAlignment="Top" Width="30" Text="{Binding Path=DoubleQuote}" />
-				<TextBox Height="23" HorizontalAlignment="Left" Margin="414,4,0,0" Name="textBox5" VerticalAlignment="Top" Width="30" Text="{Binding Path=TripleQuote}" />
 				<Label Content="Dart1:" Height="28" HorizontalAlignment="Left" Margin="169,28,0,0" Name="label6" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}"/>
                 <Label Content="Dart2:" Height="28" HorizontalAlignment="Left" Margin="169,50,0,0" Name="label7" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart2Enabled}" />
                 <CheckBox Content="Alle" Height="16" HorizontalAlignment="Left" Margin="217,33,0,0" Name="checkBox1" VerticalAlignment="Top" IsEnabled="{Binding Path=Dart1Enabled}" IsChecked="{Binding Path=Dart1AlleChecked}" />
