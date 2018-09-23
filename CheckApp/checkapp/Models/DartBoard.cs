@@ -194,7 +194,7 @@ namespace CheckApp
 			0.10  //20 x
 		};
 
-		private static readonly double SingleBullQuote = 0.25;
+		private static readonly double SingleBullQuote = 0.23;
 		private static readonly double DoubleBullQuote = 0.05;
 
 		private static readonly List<double> SingleWhenDoubleQuotes = new List<double>
@@ -392,25 +392,25 @@ namespace CheckApp
 		private static readonly List<double> SingleWhenBull = new List<double>
 		{
 			0.05, //1
-			0.05, //2
+			0.02, //2
 			0.10, //3
 			0.03, //4
 			0.03, //5
 			0.03, //6
-			0.03, //7
+			0.04, //7
 			0.03, //8
 			0.02, //9
 			0.03, //10
-			0.02, //11
+			0.03, //11
 			0.02, //12
-			0.02, //13
-			0.03, //14
+			0.03, //13
+			0.02, //14
 			0.02, //15
 			0.04, //16
 			0.05, //17
 			0.04, //18
-			0.07, //19
-			0.02  //20
+			0.06, //19
+			0.03  //20
 		};
 	}
 }

@@ -87,7 +87,7 @@ namespace CheckApp
 					par[5] = true;
 				}
 
-				_help = _calc.CalculateChecks(scores, leftdarts, worker, par);
+				_help = _calc.CalculateChecks(scores, leftdarts, worker, par, true);
 			}
 
 			CheckCnt = _help?.Count ?? 0;
@@ -128,7 +128,7 @@ namespace CheckApp
 						}
 					}
 
-					Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability,
+					Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.DoublePropability,
 						check.Check.Calculation, check.Check.Message, check.Check.SubChecks));
 				}
 			}

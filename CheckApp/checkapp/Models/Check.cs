@@ -15,7 +15,7 @@ namespace CheckApp
 			SubChecks = new List<Check>();
 		}
 
-		public Check(Field dart1, Field dart2, Field dart3, double propability, double calculation, string message, List<Check> subChecks)
+		public Check(Field dart1, Field dart2, Field dart3, double propability, double doublePropability, double calculation, string message, List<Check> subChecks)
 		{
 			if (dart2 == null)
 			{
@@ -36,6 +36,7 @@ namespace CheckApp
 				}
 			}
 			Propability = propability;
+			DoublePropability = doublePropability;
 			Calculation = calculation;
 			Message = message;
 			SubChecks = subChecks;
@@ -46,6 +47,7 @@ namespace CheckApp
 		public string CheckString => GetCheckString();
 		public double Propability { get; set; }
 		public string PropabilityString => Math.Round(Propability * 100, 2) + "%";
+		public double DoublePropability { get; set; }
 		public double Calculation { get; set; }
 		public string Message { get; set; }
 		public Field CheckDart { get; set; }

@@ -14,9 +14,9 @@ namespace CheckApp
 		{
 			this.chk = new Check();
 		}
-		public CheckViewModel(Field dart1, Field dart2, Field dart3, double Propability, double Calculation, string Message, List<Check> subChecks)
+		public CheckViewModel(Field dart1, Field dart2, Field dart3, double Propability, double DoublePropability, double Calculation, string Message, List<Check> subChecks)
 		{
-			this.chk = new Check(dart1, dart2, dart3, Propability, Calculation, Message, subChecks);
+			this.chk = new Check(dart1, dart2, dart3, Propability, DoublePropability, Calculation, Message, subChecks);
 			SetBackground(dart1, dart2, dart3);
 		}
 

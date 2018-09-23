@@ -9,6 +9,7 @@ namespace CheckApp
 	public class NewCalculator
 	{
 		private readonly DartBoard _dBoard;
+		private List<CheckViewModel> _doubleChecks;
 		public NewCalculator()
 		{
 			_dBoard = new DartBoard();
@@ -19,7 +20,7 @@ namespace CheckApp
 			List<CheckViewModel> checks = new List<CheckViewModel>();
 			for (int i = 1; i <= 170; i++)
 			{
-				var current = CalculateChecks(i, 3, null, null);
+				var current = CalculateChecks(i, 3, null, null, true);
 				if (current == null)
 					continue;
 
@@ -31,7 +32,7 @@ namespace CheckApp
 			return checks;
 		}
 
-		public List<CheckViewModel> CalculateChecks(int score, int leftDarts, BackgroundWorker worker, List<bool> sth)
+		public List<CheckViewModel> CalculateChecks(int score, int leftDarts, BackgroundWorker worker, List<bool> sth, bool setDoubleProp)
 		{
 			if (!IsAFinish(score, leftDarts))
 				return null;
@@ -39,7 +40,20 @@ namespace CheckApp
 			if (leftDarts == 1)
 			{
 				var doubleField = _dBoard.GetAllDoubles().Single(x => x.Score == score);
-				return new List<CheckViewModel> {new CheckViewModel(doubleField, null, null, doubleField.HitRatio, doubleField.HitRatio, "abc", null)};
+				var doubleProp = 0.0;
+				if (setDoubleProp)
+				{
+					if (_doubleChecks == null)
+					{
+						CalculateDoubles();
+					}
+
+					doubleProp = _doubleChecks.Single(x => (x.Check.CheckDart.Score + x.Check.AufCheckDart?.Score ?? x.Check.CheckDart.Score) == score).Check.Propability;
+				}
+				var check = new CheckViewModel(doubleField, null, null, doubleField.HitRatio, doubleProp, doubleField.HitRatio, "", null);
+
+
+				return new List<CheckViewModel> {check};
 			}
 			var checks = new List<CheckViewModel>();
 			if (leftDarts == 2)
@@ -51,12 +65,12 @@ namespace CheckApp
 					var oneDartFinish = score == field.Score && field.Type == FieldType.Double;
 					if (oneDartFinish)
 					{
-						check = CalculateChecks(score, leftDarts - 1, worker, sth).Single();
+						check = CalculateChecks(score, leftDarts - 1, worker, sth, setDoubleProp).Single();
 						prop = check.Check.Propability;
 					}
 					else
 					{
-						check = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth)?.FirstOrDefault();
+						check = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth, setDoubleProp)?.FirstOrDefault();
 						if (check == null)
 							continue;
 						prop = check.Check.Propability * field.HitRatio;
@@ -66,7 +80,7 @@ namespace CheckApp
 					var subChecks = new List<Check>();
 					foreach (var neighbour in field.Neighbours.Keys)
 					{
-						var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth)
+						var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth, setDoubleProp)
 							?.FirstOrDefault();
 						if(subCheck == null)
 							continue;
@@ -76,13 +90,13 @@ namespace CheckApp
 						prop += subCheck.Check.Propability;
 						subChecks.Add(subCheck.Check);
 					}
-					var newCheck = new CheckViewModel(field, check.Check.CheckDart, null, prop, prop, "", subChecks);
+					var newCheck = new CheckViewModel(field, check.Check.CheckDart, null, prop, check.Check.DoublePropability, prop, "", subChecks);
 					if(oneDartFinish)
-						newCheck = new CheckViewModel(field, null, null, prop, prop, "", subChecks);
+						newCheck = new CheckViewModel(field, null, null, prop, check.Check.DoublePropability, prop, "", subChecks);
 					checks.Add(newCheck);
 				}
 
-				return checks.OrderByDescending(x => x.Check.Propability).ToList();
+				return checks.OrderByDescending(x => x.Check.Propability).ThenByDescending(x => x.Check.DoublePropability).ToList();
 			}
 
 			var list = _dBoard.GetAllFields();
@@ -94,11 +108,11 @@ namespace CheckApp
 				var prop = 0.0;
 				if (oneDartFinish)
 				{
-					currentChecks = CalculateChecks(score, leftDarts - 2, worker, sth);
+					currentChecks = CalculateChecks(score, leftDarts - 2, worker, sth, setDoubleProp);
 				}
 				else
 				{
-					currentChecks = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth);
+					currentChecks = CalculateChecks(score - field.Score, leftDarts - 1, worker, sth, setDoubleProp);
 					if (currentChecks == null)
 					{
 						worker?.ReportProgress(index * 100 / list.Count);
@@ -109,7 +123,7 @@ namespace CheckApp
 				var neighbourSubChecks = new List<Check>();
 				foreach (var neighbour in field.Neighbours.Keys)
 				{
-					var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth)
+					var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth, setDoubleProp)
 						?.FirstOrDefault();
 					if (subCheck == null)
 						continue;
@@ -152,27 +166,38 @@ namespace CheckApp
 					if (oneDartFinish)
 					{
 						var propa = field.HitRatio + propx;
-						checks.Add(new CheckViewModel(field, null, null, propa, propa, "", subChecks));
+						checks.Add(new CheckViewModel(field, null, null, propa, currentCheck.Check.DoublePropability, propa, "", subChecks));
 					}
 					else if (currentCheck.Check.AufCheckDart != null)
 					{
 						var propa = field.HitRatio * currentCheck.Check.AufCheckDart.HitRatio *
 									currentCheck.Check.CheckDart.HitRatio + propx;
 						checks.Add(new CheckViewModel(field, currentCheck.Check.AufCheckDart,
-							currentCheck.Check.CheckDart, propa, propa, "", subChecks));
+							currentCheck.Check.CheckDart, propa, currentCheck.Check.DoublePropability, propa, "", subChecks));
 					}
 					else
 					{
 						var propa = field.HitRatio * currentCheck.Check.CheckDart.HitRatio + propx;
 						checks.Add(new CheckViewModel(field, currentCheck.Check.CheckDart, null,
-							propa, propa, "", subChecks));
+							propa, currentCheck.Check.DoublePropability, propa, "", subChecks));
 					}
 				}
 
 				worker?.ReportProgress(index*100/list.Count);
 			}
 
-			return checks.OrderByDescending(x => x.Check.Propability).ToList();
+			return checks.OrderByDescending(x => x.Check.Propability).ThenByDescending(x => x.Check.DoublePropability).ToList();
+		}
+
+		private void CalculateDoubles()
+		{
+			_doubleChecks = new List<CheckViewModel>();
+			for (int i = 2; i < 51; i++)
+			{
+				if (!IsAFinish(i, 1))
+					continue;
+				_doubleChecks.Add(CalculateChecks(i, 3, null, null, false).First());
+			}
 		}
 
 		private bool IsAFinish(int score, int leftDarts)
