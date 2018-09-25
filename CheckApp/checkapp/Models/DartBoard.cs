@@ -93,6 +93,8 @@ namespace CheckApp
 				singleFields[i].Neighbours.Add(tripleFields[i], TripleWhenSingleQuotes[i]);
 				singleFields[i].Neighbours.Add(leftNeighbours[i], LeftNeighbourWhenSingle[i]);
 				singleFields[i].Neighbours.Add(rightNeighbours[i], RightNeighbourWhenSingle[i]);
+				singleFields[i].Neighbours.Add(doubleFields[i], DoubleWhenSingleQuotes[i]);
+				singleFields[i].Neighbours.Add(outside, OutsideWhenSingleQuotes[i]);
 
 				tripleFields[i].Neighbours.Add(singleFields[i], SingleWhenTripleQuotes[i]);
 				tripleFields[i].Neighbours.Add(leftNeighbours[i], LeftNeighbourWhenTriple[i]);
@@ -124,9 +126,10 @@ namespace CheckApp
 			return _dartBoard.Where(x => x.Type == FieldType.Double).ToList();
 		}
 
+		#region singlequotes
 		private static readonly List<double> SingleQuotes = new List<double>
 		{
-			0.65, //1
+			0.60, //1 x
 			0.65, //2
 			0.65, //3
 			0.65, //4
@@ -145,8 +148,131 @@ namespace CheckApp
 			0.65, //17
 			0.65, //18
 			0.65, //19
-			0.65  //20
+			0.65  //20 x
 		};
+
+		private static readonly List<double> TripleWhenSingleQuotes = new List<double>
+		{
+			0.05, //1 x
+			0.05, //2
+			0.05, //3
+			0.05, //4
+			0.05, //5
+			0.05, //6
+			0.05, //7
+			0.05, //8
+			0.05, //9
+			0.05, //10
+			0.05, //11
+			0.05, //12
+			0.05, //13
+			0.05, //14
+			0.05, //15
+			0.05, //16
+			0.05, //17
+			0.05, //18
+			0.05, //19
+			0.05  //20 x
+		};
+
+		private static readonly List<double> DoubleWhenSingleQuotes = new List<double>
+		{
+			0.05, //1 x
+			0.0, //2
+			0.0, //3
+			0.0, //4
+			0.0, //5
+			0.0, //6
+			0.0, //7
+			0.0, //8
+			0.0, //9
+			0.0, //10
+			0.0, //11
+			0.0, //12
+			0.0, //13
+			0.0, //14
+			0.0, //15
+			0.0, //16
+			0.0, //17
+			0.0, //18
+			0.0, //19
+			0.0  //20 x
+		};
+
+		private static readonly List<double> LeftNeighbourWhenSingle = new List<double>
+		{
+			0.10, //20 x
+			0.10, //15
+			0.10, //17
+			0.10, //18
+			0.10, //12
+			0.10, //13
+			0.10, //19
+			0.10, //16
+			0.10, //14
+			0.10, //6
+			0.10, //8
+			0.10, //9
+			0.10, //4
+			0.10, //11
+			0.10, //10
+			0.10, //7
+			0.10, //2
+			0.10, //1
+			0.10, //3
+			0.10  //5 x
+		};
+
+		private static readonly List<double> RightNeighbourWhenSingle = new List<double>
+		{
+			0.15, //18 x
+			0.15, //17
+			0.15, //19
+			0.15, //13
+			0.15, //20
+			0.15, //10
+			0.15, //16
+			0.15, //11
+			0.15, //12
+			0.15, //15
+			0.15, //14
+			0.15, //5
+			0.15, //6
+			0.15, //9
+			0.15, //2
+			0.15, //8
+			0.15, //3
+			0.15, //4
+			0.15, //7
+			0.15 //1 x
+		};
+
+		private static readonly List<double> OutsideWhenSingleQuotes = new List<double>
+		{
+			0.05, //1 x
+			0.0, //2
+			0.0, //3
+			0.0, //4
+			0.0, //5
+			0.0, //6
+			0.0, //7
+			0.0, //8
+			0.0, //9
+			0.0, //10
+			0.0, //11
+			0.0, //12
+			0.0, //13
+			0.0, //14
+			0.0, //15
+			0.0, //16
+			0.0, //17
+			0.0, //18
+			0.0, //19
+			0.0  //20 x
+		};
+		#endregion
+
+		#region doublequotes
 		private static readonly List<double> DoubleQuotes = new List<double>
 		{
 			0.22, //1
@@ -170,32 +296,6 @@ namespace CheckApp
 			0.22, //19
 			0.22  //20 x
 		};
-		private static readonly List<double> TripleQuotes = new List<double>
-		{
-			0.10, //1
-			0.10, //2
-			0.10, //3
-			0.10, //4
-			0.10, //5
-			0.10, //6
-			0.10, //7
-			0.10, //8
-			0.10, //9
-			0.10, //10
-			0.10, //11
-			0.10, //12
-			0.10, //13
-			0.10, //14
-			0.10, //15
-			0.10, //16
-			0.10, //17
-			0.10, //18
-			0.10, //19
-			0.10  //20 x
-		};
-
-		private static readonly double SingleBullQuote = 0.23;
-		private static readonly double DoubleBullQuote = 0.05;
 
 		private static readonly List<double> SingleWhenDoubleQuotes = new List<double>
 		{
@@ -244,29 +344,31 @@ namespace CheckApp
 			0.30, //19
 			0.30  //20 x
 		};
+		#endregion
 
-		private static readonly List<double> TripleWhenSingleQuotes = new List<double>
+		#region triplequotes
+		private static readonly List<double> TripleQuotes = new List<double>
 		{
-			0.05, //1
-			0.05, //2
-			0.05, //3
-			0.05, //4
-			0.05, //5
-			0.05, //6
-			0.05, //7
-			0.05, //8
-			0.05, //9
-			0.05, //10
-			0.05, //11
-			0.05, //12
-			0.05, //13
-			0.05, //14
-			0.05, //15
-			0.05, //16
-			0.05, //17
-			0.05, //18
-			0.05, //19
-			0.05  //20 x
+			0.10, //1
+			0.10, //2
+			0.10, //3
+			0.10, //4
+			0.10, //5
+			0.10, //6
+			0.10, //7
+			0.10, //8
+			0.10, //9
+			0.10, //10
+			0.10, //11
+			0.10, //12
+			0.10, //13
+			0.10, //14
+			0.10, //15
+			0.10, //16
+			0.10, //17
+			0.10, //18
+			0.10, //19
+			0.10  //20 x
 		};
 
 		private static readonly List<double> SingleWhenTripleQuotes = new List<double>
@@ -291,54 +393,6 @@ namespace CheckApp
 			0.50, //18
 			0.50, //19
 			0.50  //20 x
-		};
-
-		private static readonly List<double> LeftNeighbourWhenSingle = new List<double>
-		{
-			0.10, //20
-			0.10, //15
-			0.10, //17
-			0.10, //18
-			0.10, //12
-			0.10, //13
-			0.10, //19
-			0.10, //16
-			0.10, //14
-			0.10, //6
-			0.10, //8
-			0.10, //9
-			0.10, //4
-			0.10, //11
-			0.10, //10
-			0.10, //7
-			0.10, //2
-			0.10, //1
-			0.10, //3
-			0.10  //5
-		};
-
-		private static readonly List<double> RightNeighbourWhenSingle = new List<double>
-		{
-			0.15, //18
-			0.15, //17
-			0.15, //19
-			0.15, //13
-			0.15, //20
-			0.15, //10
-			0.15, //16
-			0.15, //11
-			0.15, //12
-			0.15, //15
-			0.15, //14
-			0.15, //5
-			0.15, //6
-			0.15, //9
-			0.15, //2
-			0.15, //8
-			0.15, //3
-			0.15, //4
-			0.15, //7
-			0.15 //1
 		};
 
 		private static readonly List<double> LeftNeighbourWhenTriple = new List<double>
@@ -388,6 +442,11 @@ namespace CheckApp
 			0.15, //7
 			0.15 //1
 		};
+		#endregion
+
+		#region bullquotes
+		private static readonly double SingleBullQuote = 0.23;
+		private static readonly double DoubleBullQuote = 0.05;
 
 		private static readonly List<double> SingleWhenBull = new List<double>
 		{
@@ -412,5 +471,6 @@ namespace CheckApp
 			0.06, //19
 			0.03  //20
 		};
+		#endregion
 	}
 }
