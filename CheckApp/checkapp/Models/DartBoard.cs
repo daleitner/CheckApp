@@ -89,6 +89,8 @@ namespace CheckApp
 			{
 				doubleFields[i].Neighbours.Add(singleFields[i], SingleWhenDoubleQuotes[i]);
 				doubleFields[i].Neighbours.Add(outside, OutsideWhenDoubleQuotes[i]);
+				doubleFields[i].Neighbours.Add(leftNeighbours[i], LeftNeighbourWhenDouble[i]);
+				doubleFields[i].Neighbours.Add(rightNeighbours[i], RightNeighbourWhenDouble[i]);
 
 				singleFields[i].Neighbours.Add(tripleFields[i], TripleWhenSingleQuotes[i]);
 				singleFields[i].Neighbours.Add(leftNeighbours[i], LeftNeighbourWhenSingle[i]);
@@ -276,7 +278,7 @@ namespace CheckApp
 		private static readonly List<double> DoubleQuotes = new List<double>
 		{
 			0.22, //1
-			0.22, //2
+			0.16, //2 x
 			0.22, //3
 			0.22, //4
 			0.22, //5
@@ -300,7 +302,7 @@ namespace CheckApp
 		private static readonly List<double> SingleWhenDoubleQuotes = new List<double>
 		{
 			0.40, //1
-			0.40, //2
+			0.20, //2 x
 			0.40, //3
 			0.40, //4
 			0.40, //5
@@ -324,7 +326,7 @@ namespace CheckApp
 		private static readonly List<double> OutsideWhenDoubleQuotes = new List<double>
 		{
 			0.30, //1
-			0.30, //2
+			0.50, //2 x
 			0.30, //3
 			0.30, //4
 			0.30, //5
@@ -343,6 +345,54 @@ namespace CheckApp
 			0.30, //18
 			0.30, //19
 			0.30  //20 x
+		};
+
+		private static readonly List<double> LeftNeighbourWhenDouble = new List<double>
+		{
+			0.10, //20
+			0.10, //15 x
+			0.10, //17
+			0.10, //18
+			0.10, //12
+			0.10, //13
+			0.10, //19
+			0.10, //16
+			0.10, //14
+			0.10, //6
+			0.10, //8
+			0.10, //9
+			0.10, //4
+			0.10, //11
+			0.10, //10
+			0.10, //7
+			0.10, //2
+			0.10, //1
+			0.10, //3
+			0.10  //5
+		};
+
+		private static readonly List<double> RightNeighbourWhenDouble = new List<double>
+		{
+			0.15, //18
+			0.04, //17 x
+			0.15, //19
+			0.15, //13
+			0.15, //20
+			0.15, //10
+			0.15, //16
+			0.15, //11
+			0.15, //12
+			0.15, //15
+			0.15, //14
+			0.15, //5
+			0.15, //6
+			0.15, //9
+			0.15, //2
+			0.15, //8
+			0.15, //3
+			0.15, //4
+			0.15, //7
+			0.15 //1
 		};
 		#endregion
 
