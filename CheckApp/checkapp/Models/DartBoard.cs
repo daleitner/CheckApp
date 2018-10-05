@@ -110,6 +110,9 @@ namespace CheckApp
 			singleBull.Neighbours.Add(doubleBull, doubleBull.HitRatio);
 			doubleBull.Neighbours.Add(singleBull, singleBull.HitRatio);
 
+			tripleFields[5].Neighbours.Add(tripleFields[9], 0.08);
+			tripleFields[5].Neighbours.Add(tripleFields[12], 0.05);
+
 			_dartBoard.AddRange(singleFields);
 			_dartBoard.AddRange(doubleFields);
 			_dartBoard.AddRange(tripleFields);
@@ -137,7 +140,7 @@ namespace CheckApp
 			0.70, //4 x
 			0.65, //5
 			0.65, //6
-			0.65, //7
+			0.70, //7 x
 			0.65, //8
 			0.65, //9
 			0.65, //10
@@ -161,7 +164,7 @@ namespace CheckApp
 			0.05, //4 x
 			0.05, //5
 			0.05, //6
-			0.05, //7
+			0.05, //7 x
 			0.05, //8
 			0.05, //9
 			0.05, //10
@@ -185,7 +188,7 @@ namespace CheckApp
 			0.05, //4 x
 			0.0, //5
 			0.0, //6
-			0.0, //7
+			0.05, //7 x
 			0.0, //8
 			0.0, //9
 			0.0, //10
@@ -209,7 +212,7 @@ namespace CheckApp
 			0.07, //18 x
 			0.10, //12
 			0.10, //13
-			0.10, //19
+			0.08, //19 x
 			0.10, //16
 			0.10, //14
 			0.10, //6
@@ -233,7 +236,7 @@ namespace CheckApp
 			0.13, //13 x
 			0.15, //20
 			0.15, //10
-			0.15, //16
+			0.08, //16 x
 			0.15, //11
 			0.15, //12
 			0.15, //15
@@ -257,7 +260,7 @@ namespace CheckApp
 			0.0, //4 x
 			0.0, //5
 			0.0, //6
-			0.0, //7
+			0.05, //7 x
 			0.0, //8
 			0.0, //9
 			0.0, //10
@@ -404,7 +407,7 @@ namespace CheckApp
 			0.12, //3 x
 			0.10, //4
 			0.10, //5
-			0.10, //6
+			0.12, //6 x
 			0.10, //7
 			0.10, //8
 			0.10, //9
@@ -428,7 +431,7 @@ namespace CheckApp
 			0.64, //3 x
 			0.50, //4
 			0.50, //5
-			0.50, //6
+			0.38, //6 x
 			0.50, //7
 			0.50, //8
 			0.50, //9
@@ -452,7 +455,7 @@ namespace CheckApp
 			0.12, //17 x
 			0.10, //18
 			0.10, //12
-			0.10, //13
+			0.17, //13 x
 			0.10, //19
 			0.10, //16
 			0.10, //14
@@ -476,7 +479,7 @@ namespace CheckApp
 			0.12, //19 x
 			0.15, //13
 			0.15, //20
-			0.15, //10
+			0.21, //10 x
 			0.15, //16
 			0.15, //11
 			0.15, //12
