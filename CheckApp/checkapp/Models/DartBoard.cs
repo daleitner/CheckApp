@@ -113,6 +113,8 @@ namespace CheckApp
 			tripleFields[5].Neighbours.Add(tripleFields[9], 0.08);		//T10 bei T6
 			tripleFields[5].Neighbours.Add(tripleFields[12], 0.05);		//T13 bei T6
 			doubleFields[7].Neighbours.Add(doubleFields[15], 0.08);		//D16 bei D8
+			tripleFields[8].Neighbours.Add(tripleFields[11], 0.05);		//T12 bei T9
+			tripleFields[8].Neighbours.Add(tripleFields[13], 0.11);		//T14 bei T9
 
 			_dartBoard.AddRange(singleFields);
 			_dartBoard.AddRange(doubleFields);
@@ -144,7 +146,7 @@ namespace CheckApp
 			0.70, //7 x
 			0.65, //8
 			0.65, //9
-			0.65, //10
+			0.51, //10 x
 			0.65, //11
 			0.65, //12
 			0.65, //13
@@ -168,7 +170,7 @@ namespace CheckApp
 			0.05, //7 x
 			0.05, //8
 			0.05, //9
-			0.05, //10
+			0.02, //10 x
 			0.05, //11
 			0.05, //12
 			0.05, //13
@@ -192,7 +194,7 @@ namespace CheckApp
 			0.05, //7 x
 			0.0, //8
 			0.0, //9
-			0.0, //10
+			0.06, //10 x
 			0.0, //11
 			0.0, //12
 			0.0, //13
@@ -216,7 +218,7 @@ namespace CheckApp
 			0.08, //19 x
 			0.10, //16
 			0.10, //14
-			0.10, //6
+			0.12, //6 x
 			0.10, //8
 			0.10, //9
 			0.10, //4
@@ -240,7 +242,7 @@ namespace CheckApp
 			0.08, //16 x
 			0.15, //11
 			0.15, //12
-			0.15, //15
+			0.25, //15 x
 			0.15, //14
 			0.15, //5
 			0.15, //6
@@ -264,7 +266,7 @@ namespace CheckApp
 			0.05, //7 x
 			0.0, //8
 			0.0, //9
-			0.0, //10
+			0.04, //10 x
 			0.0, //11
 			0.0, //12
 			0.0, //13
@@ -411,7 +413,7 @@ namespace CheckApp
 			0.12, //6 x
 			0.10, //7
 			0.10, //8
-			0.10, //9
+			0.13, //9 x
 			0.10, //10
 			0.10, //11
 			0.10, //12
@@ -435,7 +437,7 @@ namespace CheckApp
 			0.38, //6 x
 			0.50, //7
 			0.50, //8
-			0.50, //9
+			0.40, //9 x
 			0.50, //10
 			0.50, //11
 			0.50, //12
@@ -459,7 +461,7 @@ namespace CheckApp
 			0.17, //13 x
 			0.10, //19
 			0.10, //16
-			0.10, //14
+			0.23, //14 x
 			0.10, //6
 			0.10, //8
 			0.10, //9
@@ -483,7 +485,7 @@ namespace CheckApp
 			0.21, //10 x
 			0.15, //16
 			0.15, //11
-			0.15, //12
+			0.08, //12 x
 			0.15, //15
 			0.15, //14
 			0.15, //5
