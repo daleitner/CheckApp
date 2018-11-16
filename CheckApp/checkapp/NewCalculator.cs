@@ -51,7 +51,8 @@ namespace CheckApp
 					doubleProp = _doubleChecks.Single(x => (x.Check.CheckDart.Score + x.Check.AufCheckDart?.Score ?? x.Check.CheckDart.Score) == score).Check.Propability;
 				}
 				var check = new CheckViewModel(doubleField, null, null, doubleField.HitRatio, doubleProp, doubleField.HitRatio, "", null);
-
+				if (check.Check.Propability <= 0.0)
+					return null;
 
 				return new List<CheckViewModel> {check};
 			}
@@ -80,6 +81,8 @@ namespace CheckApp
 					var subChecks = new List<Check>();
 					foreach (var neighbour in field.Neighbours.Keys)
 					{
+						if (field.Neighbours[neighbour] <= 0.0)
+							continue;
 						var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth, setDoubleProp)
 							?.FirstOrDefault();
 						if(subCheck == null)
@@ -123,6 +126,8 @@ namespace CheckApp
 				var neighbourSubChecks = new List<Check>();
 				foreach (var neighbour in field.Neighbours.Keys)
 				{
+					if(field.Neighbours[neighbour] <= 0.0)
+						continue;
 					var subCheck = CalculateChecks(score - neighbour.Score, leftDarts - 1, worker, sth, setDoubleProp)
 						?.FirstOrDefault();
 					if (subCheck == null)
