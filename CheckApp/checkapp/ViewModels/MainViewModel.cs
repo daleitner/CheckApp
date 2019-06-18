@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using CheckApp.Models;
+using CheckApp.Services;
+using Dart.Base;
 
 namespace CheckApp
 {
 	public class MainViewModel : ViewModelBase
 	{
-		private string _score = "";
-		private List<string> _leftDarts;
-		private string _leftDartsSelected;
+		private List<int> _leftDarts;
+		private int _score;
+		private int _leftDartsSelected;
 		private ObservableCollection<CheckViewModel> _solutions;
 		private RelayCommand _calculateCommand;
 		private RelayCommand _calculateAllCommand;
@@ -19,25 +22,20 @@ namespace CheckApp
 		private int _calculationProgress;
 		private readonly BackgroundWorker _worker;
 		private List<CheckViewModel> _help;
-		private NewCalculator _calc;
+		private CheckCalculator _calc;
 		private Visibility _loadVisibility = Visibility.Collapsed;
 		private bool _dart1Enabled = true;
 		private bool _dart2Enabled = true;
 		private bool _dart1AlleChecked = true;
-		private bool _dart1SingleChecked;
-		private bool _dart1DoubleChecked;
-		private bool _dart1TripleChecked;
 		private bool _dart2AlleChecked = true;
-		private bool _dart2SingleChecked;
-		private bool _dart2DoubleChecked;
-		private bool _dart2TripleChecked;
-		private string _singleQuote = "55";
-		private string _doubleQuote = "15";
-		private string _tripleQuote = "10";
+		private readonly Config _config;
 		private bool _runAll;
 
 		public MainViewModel()
 		{
+			_config = new Config();
+			My = 22;
+			Sigma = 12;
 			_worker = new BackgroundWorker
 			{
 				WorkerReportsProgress = true,
@@ -46,49 +44,14 @@ namespace CheckApp
 			_worker.DoWork += worker_DoWork;
 			_worker.ProgressChanged += worker_ProgressChanged;
 			_worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-			//_calc = new Calculator(int.Parse(_singleQuote), int.Parse(_doubleQuote), int.Parse(_doubleQuote));
-			_leftDarts = new List<string> { "3", "2", "1" };
-			_leftDartsSelected = _leftDarts[0];
+			_leftDarts = new List<int> { 3, 2, 1 };
+			_leftDartsSelected = _leftDarts.First();
 		}
 
 		void worker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			var worker = (BackgroundWorker)sender;
-			if (_runAll)
-				_help = _calc.CalculateAll(worker);
-			else
-			{
-				int scores;
-				if (!int.TryParse(Score, out scores))
-					return;
-
-				int leftdarts;
-				int.TryParse(LeftDartsSelected, out leftdarts);
-				var par = new List<bool>
-				{
-					Dart1SingleChecked,
-					Dart1DoubleChecked,
-					Dart1TripleChecked,
-					Dart2SingleChecked,
-					Dart2DoubleChecked,
-					Dart2TripleChecked
-				};
-				if (Dart1AlleChecked || !Dart1Enabled)
-				{
-					par[0] = true;
-					par[1] = true;
-					par[2] = true;
-				}
-
-				if (Dart2AlleChecked || !Dart2Enabled)
-				{
-					par[3] = true;
-					par[4] = true;
-					par[5] = true;
-				}
-
-				_help = _calc.CalculateChecks(scores, leftdarts, worker, par, true);
-			}
+			_help = _runAll ? _calc.CalculateAll(LeftDartsSelected, worker) : _calc.CalculateChecks(Score, LeftDartsSelected, worker, true);
 
 			CheckCnt = _help?.Count ?? 0;
 			
@@ -128,8 +91,7 @@ namespace CheckApp
 						}
 					}
 
-					Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.DoublePropability,
-						check.Check.Calculation, check.Check.Message, check.Check.SubChecks));
+					Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.SubChecks));
 				}
 			}
 
@@ -137,109 +99,85 @@ namespace CheckApp
 			CalculationProgress = 0;
 		}
 
-		public string Score
+		public int Score
 		{
-			get
-			{
-				return _score;
-			}
+			get => _score;
 			set
 			{
 				_score = value;
-				OnPropertyChanged("Score");
+				OnPropertyChanged(nameof(Score));
 			}
 		}
 
-		public List<string> LeftDarts
+		public List<int> LeftDarts
 		{
-			get
-			{
-				return _leftDarts;
-			}
+			get => _leftDarts;
 			set
 			{
 				_leftDarts = value;
-				OnPropertyChanged("LeftDarts");
+				OnPropertyChanged(nameof(LeftDarts));
 			}
 		}
 
-		public string LeftDartsSelected
+		public int LeftDartsSelected
 		{
-			get
-			{
-				return _leftDartsSelected;
-			}
+			get => _leftDartsSelected;
 			set
 			{
 				_leftDartsSelected = value;
 				switch (_leftDartsSelected)
 				{
-					case "1": Dart1Enabled = false; Dart2Enabled = false; break;
-					case "2": Dart1Enabled = true; Dart2Enabled = false; break;
-					case "3": Dart1Enabled = true; Dart2Enabled = true; break;
+					case 1: Dart1Enabled = false; Dart2Enabled = false; break;
+					case 2: Dart1Enabled = true; Dart2Enabled = false; break;
+					case 3: Dart1Enabled = true; Dart2Enabled = true; break;
 				}
-				OnPropertyChanged("LeftDartsSelected");
+				OnPropertyChanged(nameof(LeftDartsSelected));
 			}
 		}
 
 		public int CalculationProgress
 		{
-			get
-			{
-				return _calculationProgress;
-			}
+			get => _calculationProgress;
 			set
 			{
 				_calculationProgress = value;
-				OnPropertyChanged("CalculationProgress");
+				OnPropertyChanged(nameof(CalculationProgress));
 			}
 		}
 
 		public int CheckCnt
 		{
-			get
-			{
-				return _checkCnt;
-			}
+			get => _checkCnt;
 			set
 			{
 				_checkCnt = value;
-				OnPropertyChanged("CheckCnt");
+				OnPropertyChanged(nameof(CheckCnt));
 			}
 		}
 
 		public bool Dart1Enabled
 		{
-			get
-			{
-				return _dart1Enabled;
-			}
+			get => _dart1Enabled;
 			set
 			{
 				_dart1Enabled = value;
-				OnPropertyChanged("Dart1Enabled");
+				OnPropertyChanged(nameof(Dart1Enabled));
 			}
 		}
 
 		public bool Dart2Enabled
 		{
-			get
-			{
-				return _dart2Enabled;
-			}
+			get => _dart2Enabled;
 			set
 			{
 				_dart2Enabled = value;
-				OnPropertyChanged("Dart2Enabled");
+				OnPropertyChanged(nameof(Dart2Enabled));
 			}
 		}
 
 		public bool Dart1AlleChecked
 		{
-			get
-			{
-				return _dart1AlleChecked;
-			}
+			get => _dart1AlleChecked;
 			set
 			{
 				_dart1AlleChecked = value;
@@ -249,61 +187,49 @@ namespace CheckApp
 					Dart1DoubleChecked = false;
 					Dart1TripleChecked = false;
 				}
-				OnPropertyChanged("Dart1AlleChecked");
+				OnPropertyChanged(nameof(Dart1AlleChecked));
 			}
 		}
 
 		public bool Dart1SingleChecked
 		{
-			get
-			{
-				return _dart1SingleChecked;
-			}
+			get => _config.Dart1SingleChecked;
 			set
 			{
-				_dart1SingleChecked = value;
-				if (_dart1SingleChecked && Dart1AlleChecked)
+				_config.Dart1SingleChecked = value;
+				if (_config.Dart1SingleChecked && Dart1AlleChecked)
 					Dart1AlleChecked = false;
-				OnPropertyChanged("Dart1SingleChecked");
+				OnPropertyChanged(nameof(Dart1SingleChecked));
 			}
 		}
 
 		public bool Dart1DoubleChecked
 		{
-			get
-			{
-				return _dart1DoubleChecked;
-			}
+			get => _config.Dart1DoubleChecked;
 			set
 			{
-				_dart1DoubleChecked = value;
-				if (_dart1DoubleChecked && Dart1AlleChecked)
+				_config.Dart1DoubleChecked = value;
+				if (_config.Dart1DoubleChecked && Dart1AlleChecked)
 					Dart1AlleChecked = false;
-				OnPropertyChanged("Dart1DoubleChecked");
+				OnPropertyChanged(nameof(Dart1DoubleChecked));
 			}
 		}
 
 		public bool Dart1TripleChecked
 		{
-			get
-			{
-				return _dart1TripleChecked;
-			}
+			get => _config.Dart1TripleChecked;
 			set
 			{
-				_dart1TripleChecked = value;
-				if (_dart1TripleChecked && Dart1AlleChecked)
+				_config.Dart1TripleChecked = value;
+				if (_config.Dart1TripleChecked && Dart1AlleChecked)
 					Dart1AlleChecked = false;
-				OnPropertyChanged("Dart1TripleChecked");
+				OnPropertyChanged(nameof(Dart1TripleChecked));
 			}
 		}
 
 		public bool Dart2AlleChecked
 		{
-			get
-			{
-				return _dart2AlleChecked;
-			}
+			get => _dart2AlleChecked;
 			set
 			{
 				_dart2AlleChecked = value;
@@ -313,116 +239,82 @@ namespace CheckApp
 					Dart2DoubleChecked = false;
 					Dart2TripleChecked = false;
 				}
-				OnPropertyChanged("Dart2AlleChecked");
+				OnPropertyChanged(nameof(Dart2AlleChecked));
 			}
 		}
 
 		public bool Dart2SingleChecked
 		{
-			get
-			{
-				return _dart2SingleChecked;
-			}
+			get => _config.Dart2SingleChecked;
 			set
 			{
-				_dart2SingleChecked = value;
-				if (_dart2SingleChecked && Dart2AlleChecked)
+				_config.Dart2SingleChecked = value;
+				if (_config.Dart2SingleChecked && Dart2AlleChecked)
 					Dart2AlleChecked = false;
-				OnPropertyChanged("Dart2SingleChecked");
+				OnPropertyChanged(nameof(Dart2SingleChecked));
 			}
 		}
 
 		public bool Dart2DoubleChecked
 		{
-			get
-			{
-				return _dart2DoubleChecked;
-			}
+			get => _config.Dart2DoubleChecked;
 			set
 			{
-				_dart2DoubleChecked = value;
-				if (_dart2DoubleChecked && Dart2AlleChecked)
+				_config.Dart2DoubleChecked = value;
+				if (_config.Dart2DoubleChecked && Dart2AlleChecked)
 					Dart2AlleChecked = false;
-				OnPropertyChanged("Dart2DoubleChecked");
+				OnPropertyChanged(nameof(Dart2DoubleChecked));
 			}
 		}
 
 		public bool Dart2TripleChecked
 		{
-			get
-			{
-				return _dart2TripleChecked;
-			}
+			get => _config.Dart2TripleChecked;
 			set
 			{
-				_dart2TripleChecked = value;
-				if (_dart2TripleChecked && Dart2AlleChecked)
+				_config.Dart2TripleChecked = value;
+				if (_config.Dart2TripleChecked && Dart2AlleChecked)
 					Dart2AlleChecked = false;
-				OnPropertyChanged("Dart2TripleChecked");
+				OnPropertyChanged(nameof(Dart2TripleChecked));
 			}
 		}
 
-		public string SingleQuote
+		public int My
 		{
-			get
-			{
-				return _singleQuote;
-			}
+			get => _config.My;
 			set
 			{
-				_singleQuote = value;
-				OnPropertyChanged(nameof(SingleQuote));
+				_config.My = value;
+				OnPropertyChanged(nameof(My));
 			}
 		}
 
-		public string DoubleQuote
+		public int Sigma
 		{
-			get
-			{
-				return _doubleQuote;
-			}
+			get => _config.Sigma;
 			set
 			{
-				_doubleQuote = value;
-				OnPropertyChanged(nameof(DoubleQuote));
-			}
-		}
-
-		public string TripleQuote
-		{
-			get
-			{
-				return _tripleQuote;
-			}
-			set
-			{
-				_tripleQuote = value;
-				OnPropertyChanged(nameof(_tripleQuote));
+				_config.Sigma = value;
+				OnPropertyChanged(nameof(Sigma));
 			}
 		}
 
 		public Visibility LoadVisibility
 		{
-			get
-			{
-				return _loadVisibility;
-			}
+			get => _loadVisibility;
 			set
 			{
 				_loadVisibility = value;
-				OnPropertyChanged("LoadVisibility");
+				OnPropertyChanged(nameof(LoadVisibility));
 			}
 		}
 		public ObservableCollection<CheckViewModel> Solutions
 		{
-			get
-			{
-				return _solutions;
-			}
+			get => _solutions;
 			set
 			{
 				_solutions = value;
-				OnPropertyChanged("Solutions");
+				OnPropertyChanged(nameof(Solutions));
 			}
 		}
 
@@ -430,13 +322,9 @@ namespace CheckApp
 		{
 			get
 			{
-				if (_calculateCommand == null)
-				{
-					_calculateCommand = new RelayCommand(
-						param => StartWorker(false)
-							);
-				}
-				return _calculateCommand;
+				return _calculateCommand ?? (_calculateCommand = new RelayCommand(
+					       param => StartWorker(false)
+				       ));
 			}
 		}
 
@@ -444,13 +332,9 @@ namespace CheckApp
 		{
 			get
 			{
-				if (_calculateAllCommand == null)
-				{
-					_calculateAllCommand = new RelayCommand(
-						param => StartWorker(true)
-					);
-				}
-				return _calculateAllCommand;
+				return _calculateAllCommand ?? (_calculateAllCommand = new RelayCommand(
+					       param => StartWorker(true)
+				       ));
 			}
 		}
 
@@ -460,7 +344,7 @@ namespace CheckApp
 			LoadVisibility = Visibility.Visible;
 			if (!_worker.IsBusy)
 			{
-				_calc = new NewCalculator();
+				_calc = new CheckCalculator(_config);
 				_worker.RunWorkerAsync(_calc);
 			}
 		}

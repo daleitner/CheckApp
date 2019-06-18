@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Dart.Base;
 
 namespace CheckApp
 {
@@ -10,12 +9,10 @@ namespace CheckApp
 		public Check()
 		{
 			Propability = 0;
-			Message = "";
-			Calculation = 0;
 			SubChecks = new List<Check>();
 		}
 
-		public Check(Field dart1, Field dart2, Field dart3, double propability, double doublePropability, double calculation, string message, List<Check> subChecks)
+		public Check(Field dart1, Field dart2, Field dart3, double propability, List<Check> subChecks = null)
 		{
 			if (dart2 == null)
 			{
@@ -36,20 +33,12 @@ namespace CheckApp
 				}
 			}
 			Propability = propability;
-			DoublePropability = doublePropability;
-			Calculation = calculation;
-			Message = message;
-			SubChecks = subChecks;
-			if(SubChecks == null)
-				SubChecks = new List<Check>();
+			SubChecks = subChecks ?? new List<Check>();
 		}
 
 		public string CheckString => GetCheckString();
 		public double Propability { get; set; }
 		public string PropabilityString => Math.Round(Propability * 100, 2) + "%";
-		public double DoublePropability { get; set; }
-		public double Calculation { get; set; }
-		public string Message { get; set; }
 		public Field CheckDart { get; set; }
 		public Field AufCheckDart { get; set; }
 		public Field ScoreDart { get; set; }
@@ -59,22 +48,12 @@ namespace CheckApp
 		{
 			string ret = "";
 			if (ScoreDart != null)
-				ret += FieldToString(ScoreDart) + " + ";
+				ret += ScoreDart + " + ";
 			if (AufCheckDart != null)
-				ret += FieldToString(AufCheckDart) + " + ";
+				ret += AufCheckDart + " + ";
 			if (CheckDart != null)
-				ret += FieldToString(CheckDart);
+				ret += CheckDart;
 			return ret;
-		}
-
-		public string FieldToString(Field f)
-		{
-			switch (f.Type)
-			{
-				case FieldType.Double: return "D" + (f.Score / 2).ToString();
-				case FieldType.Triple: return "T" + (f.Score / 3).ToString();
-				default: return f.Score.ToString();
-			}
 		}
 	}
 }

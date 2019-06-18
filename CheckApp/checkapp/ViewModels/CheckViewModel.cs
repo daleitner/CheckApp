@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows.Media;
+using Dart.Base;
 
 namespace CheckApp
 {
 	public class CheckViewModel : ViewModelBase
 	{
-		private Check chk = null;
-		private Brush background = null;
-		public CheckViewModel()
+		private Check chk;
+		private Brush background;
+
+		public CheckViewModel(Field dart1, Field dart2, Field dart3, double propability, List<Check> subChecks = null)
 		{
-			this.chk = new Check();
-		}
-		public CheckViewModel(Field dart1, Field dart2, Field dart3, double Propability, double DoublePropability, double Calculation, string Message, List<Check> subChecks)
-		{
-			this.chk = new Check(dart1, dart2, dart3, Propability, DoublePropability, Calculation, Message, subChecks);
+			this.chk = new Check(dart1, dart2, dart3, propability, subChecks);
 			SetBackground(dart1, dart2, dart3);
 		}
 
@@ -58,37 +53,37 @@ namespace CheckApp
 				{
 					switch (dart1.Type)
 					{
-						case FieldType.Single: Background = new SolidColorBrush(Colors.DeepSkyBlue); break; //2
-						case FieldType.Double: Background = new SolidColorBrush(Colors.LightGreen); break; //4
-						case FieldType.Triple: Background = new SolidColorBrush(Colors.GreenYellow); break; //5
+						case FieldEnum.SingleOut: Background = new SolidColorBrush(Colors.DeepSkyBlue); break; //2
+						case FieldEnum.Double: Background = new SolidColorBrush(Colors.LightGreen); break; //4
+						case FieldEnum.Triple: Background = new SolidColorBrush(Colors.GreenYellow); break; //5
 					}
 				}
 				else
 				{
 					switch (dart1.Type)
 					{
-						case FieldType.Single:
+						case FieldEnum.SingleOut:
 							switch (dart2.Type)
 							{
-								case FieldType.Single: Background = new SolidColorBrush(Colors.LightSeaGreen); break; //3
-								case FieldType.Double: Background = new SolidColorBrush(Colors.Yellow); break; //6
-								case FieldType.Triple: Background = new SolidColorBrush(Colors.Gold); break; //7
+								case FieldEnum.SingleOut: Background = new SolidColorBrush(Colors.LightSeaGreen); break; //3
+								case FieldEnum.Double: Background = new SolidColorBrush(Colors.Yellow); break; //6
+								case FieldEnum.Triple: Background = new SolidColorBrush(Colors.Gold); break; //7
 							}
 							break;
-						case FieldType.Double:
+						case FieldEnum.Double:
 							switch (dart2.Type)
 							{
-								case FieldType.Single: Background = new SolidColorBrush(Colors.Yellow); break; //6
-								case FieldType.Double: Background = new SolidColorBrush(Colors.Orange); break; //8
-								case FieldType.Triple: Background = new SolidColorBrush(Colors.OrangeRed); break; //9
+								case FieldEnum.SingleOut: Background = new SolidColorBrush(Colors.Yellow); break; //6
+								case FieldEnum.Double: Background = new SolidColorBrush(Colors.Orange); break; //8
+								case FieldEnum.Triple: Background = new SolidColorBrush(Colors.OrangeRed); break; //9
 							}
 							break;
-						case FieldType.Triple:
+						case FieldEnum.Triple:
 							switch (dart2.Type)
 							{
-								case FieldType.Single: Background = new SolidColorBrush(Colors.Gold); break; //7
-								case FieldType.Double: Background = new SolidColorBrush(Colors.OrangeRed); break; //9
-								case FieldType.Triple: Background = new SolidColorBrush(Colors.Red); break; //10
+								case FieldEnum.SingleOut: Background = new SolidColorBrush(Colors.Gold); break; //7
+								case FieldEnum.Double: Background = new SolidColorBrush(Colors.OrangeRed); break; //9
+								case FieldEnum.Triple: Background = new SolidColorBrush(Colors.Red); break; //10
 							}
 							break;
 					}
