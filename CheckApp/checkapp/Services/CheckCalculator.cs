@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CheckApp.Models;
 using Dart.Base;
 
@@ -14,12 +15,10 @@ namespace CheckApp.Services
 		{
 			_config = config;
 			_dBoard = DartBoard.Instance;
-			CheckSimulator.ClearCache();
 		}
 
 		public List<CheckViewModel> CalculateAll(int leftDarts, BackgroundWorker worker)
 		{
-			CheckSimulator.ClearCache();
 			List<CheckViewModel> checks = new List<CheckViewModel>();
 			var border = 170;
 			if (leftDarts == 2)
@@ -44,8 +43,6 @@ namespace CheckApp.Services
 		{
 			if (!IsAFinish(score, leftDarts))
 				return null;
-			if(clearCache)
-				CheckSimulator.ClearCache();
 
 			if (leftDarts == 1)
 				return HandleLastDart(score);
@@ -55,6 +52,14 @@ namespace CheckApp.Services
 
 			var checks = new List<CheckViewModel>();
 			var list = GetRelevantFields();
+
+			var idx = 0;
+			Parallel.ForEach(list, (field) => {
+					CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma);
+					idx++;
+					worker?.ReportProgress(idx*100/list.Count);
+			});
+			
 			for (var index = 0; index < list.Count; index++)
 			{
 				worker?.ReportProgress(index * 100 / list.Count);
@@ -75,7 +80,9 @@ namespace CheckApp.Services
 				{
 					currentChecks = CalculateChecks(score - field.Value, leftDarts - 1, worker);
 					if (currentChecks == null)
+					{
 						continue;
+					}
 				}
 
 				var neighborSubChecks = new List<Check>();

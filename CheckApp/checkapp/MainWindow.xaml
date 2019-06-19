@@ -59,7 +59,7 @@
 				
 				</Grid>
 		</Expander>
-		<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,10,0,0">
+		<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,10,0,10">
 			<Button Content="Calculate" Name="button1" VerticalAlignment="Top" Command="{Binding Path=CalculateCommand}" HorizontalAlignment="Left" Width="75" />
 			<Button Content="Calculate All" Margin="5,0,0,0" Name="button2" VerticalAlignment="Top" Command="{Binding Path=CalculateAllCommand}" HorizontalAlignment="Left" Width="75" />
 		</StackPanel>
@@ -68,9 +68,9 @@
 			<ItemsControl ItemsSource="{Binding Path=Solutions}" />
 		</ScrollViewer>
 		<Grid Grid.Row="3">
-			<Label Content="Checks:" Height="28" HorizontalAlignment="Right" Margin="0,0,38,0" Name="label2" VerticalAlignment="Center" />
+			<Label Content="Checks:" Height="28" HorizontalAlignment="Right" Margin="0,0,42,0" Name="label2" VerticalAlignment="Center" />
 			<Label Content="{Binding Path=CheckCnt}" Height="28" HorizontalAlignment="Right" Margin="0,0,17,0" Name="label3" VerticalAlignment="Center" />
-			<ProgressBar Visibility="{Binding Path=LoadVisibility}" Height="21" HorizontalAlignment="Left" Margin="89,0,0,0" Name="progressBar1" VerticalAlignment="Center" Width="124" Value="{Binding Path=CalculationProgress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+			<ProgressBar Visibility="{Binding Path=LoadVisibility}" Height="21" HorizontalAlignment="Left" Margin="89,0,0,0" Name="progressBar1" VerticalAlignment="Center" Width="200" Value="{Binding Path=CalculationProgress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 			<Label Visibility="{Binding Path=LoadVisibility}" Content="Calculation:" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" Name="label5" VerticalAlignment="Center" />
 		</Grid>
 	</Grid>
