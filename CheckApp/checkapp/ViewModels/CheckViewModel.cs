@@ -8,10 +8,12 @@ namespace CheckApp
 	{
 		private Check chk;
 		private Brush background;
+		private int _score;
 
 		public CheckViewModel(Field dart1, Field dart2, Field dart3, double propability, List<Check> subChecks = null)
 		{
 			this.chk = new Check(dart1, dart2, dart3, propability, subChecks);
+			_score = dart1.Value + (dart2?.Value ?? 0) + (dart3?.Value ?? 0);
 			SetBackground(dart1, dart2, dart3);
 		}
 
@@ -28,6 +30,15 @@ namespace CheckApp
 			}
 		}
 
+		public int Score
+		{
+			get => _score;
+			set
+			{
+				_score = value;
+				OnPropertyChanged(nameof(Score));
+			}
+		}
 		public Brush Background
 		{
 			get

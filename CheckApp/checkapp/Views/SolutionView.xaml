@@ -4,10 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" d:DesignWidth="500">
-    <Grid Background="{Binding Path=Background}" >
-		<Label Content="P:" Height="28" HorizontalAlignment="Left" Margin="160,2,0,0" Name="label1" VerticalAlignment="Top" />
-		<Label Content="{Binding Path=Check.PropabilityString}" Height="28" HorizontalAlignment="Left" Margin="180,2,0,0" Name="label4" VerticalAlignment="Top" />
-		<Expander Header="{Binding Path=Check.CheckString}" IsExpanded="False" Margin="10,4,0,0">
+	<Grid Background="{Binding Path=Background}" >
+		<Label Content="P:" Height="28" HorizontalAlignment="Left" Margin="200,2,0,0" Name="label1" VerticalAlignment="Top" />
+		<Label Content="{Binding Path=Check.PropabilityString}" Height="28" HorizontalAlignment="Left" Margin="220,2,0,0" Name="label4" VerticalAlignment="Top" />
+		<Expander IsExpanded="False" Margin="10,4,0,0">
+			<Expander.HeaderTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Label Content="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.Score}" Padding="5,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Top"></Label>
+						<Label Content=":" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0,5,5,5"></Label>
+						<Label Content="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.Check.CheckString}" HorizontalAlignment="Left" VerticalAlignment="Top"></Label>
+					</StackPanel>
+				</DataTemplate>
+			</Expander.HeaderTemplate>
 			<Grid>
 				<ItemsControl ItemsSource="{Binding Path=Check.SubChecks}">
 					<ItemsControl.ItemTemplate>
