@@ -42,8 +42,6 @@ namespace CheckApp.Services
 		}
 
 		private static SimulatorCache CacheCollection = new SimulatorCache();
-		//private static Dictionary<Field, double> Cache = new Dictionary<Field, double>();
-		//private static Dictionary<Field, Dictionary<Field, double>> NeighborCache = new Dictionary<Field, Dictionary<Field, double>>();
 		public static double GetSuccessRate(Field target, int my, int sigma)
 		{
 			var cache = CacheCollection.GetCache(my, sigma);
@@ -54,7 +52,7 @@ namespace CheckApp.Services
 			bot.AssignHitQuotes(my, sigma);
 
 			var hits = 0;
-			var tries = 100000;
+			var tries = 300000;
 			var neighbors = new Dictionary<Field, double>();
 			for (int i = 0; i < tries; i++)
 			{
