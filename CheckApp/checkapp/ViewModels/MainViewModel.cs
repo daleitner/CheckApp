@@ -64,7 +64,7 @@ namespace CheckApp
 
 		void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			Solutions = new ObservableCollection<CheckViewModel>();
+			var temp = new List<CheckViewModel>();
 			if (_help != null)
 			{
 				foreach (CheckViewModel check in _help)
@@ -91,10 +91,10 @@ namespace CheckApp
 						}
 					}
 
-					Solutions.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.SubChecks));
+					temp.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.SubChecks));
 				}
 			}
-
+			Solutions = new ObservableCollection<CheckViewModel>(temp);
 			LoadVisibility = Visibility.Collapsed;
 			CalculationProgress = 0;
 		}
