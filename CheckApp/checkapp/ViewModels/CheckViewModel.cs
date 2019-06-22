@@ -10,9 +10,9 @@ namespace CheckApp
 		private Brush background;
 		private int _score;
 
-		public CheckViewModel(Field dart1, Field dart2, Field dart3, double propability, List<Check> subChecks = null)
+		public CheckViewModel(Field dart1, Field dart2, Field dart3, double propability, double exactPropability, List<Check> subChecks = null)
 		{
-			this.chk = new Check(dart1, dart2, dart3, propability, subChecks);
+			this.chk = new Check(dart1, dart2, dart3, propability, exactPropability, subChecks);
 			_score = dart1.Value + (dart2?.Value ?? 0) + (dart3?.Value ?? 0);
 			SetBackground(dart1, dart2, dart3);
 		}

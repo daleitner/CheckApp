@@ -91,7 +91,7 @@ namespace CheckApp
 						}
 					}
 
-					temp.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.SubChecks));
+					temp.Add(new CheckViewModel(dart1, dart2, dart3, check.Check.Propability, check.Check.ExactPropability, check.Check.SubChecks));
 				}
 			}
 			Solutions = new ObservableCollection<CheckViewModel>(temp);

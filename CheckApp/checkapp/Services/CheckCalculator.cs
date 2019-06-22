@@ -19,6 +19,15 @@ namespace CheckApp.Services
 
 		public List<CheckViewModel> CalculateAll(int leftDarts, BackgroundWorker worker)
 		{
+			var list = GetRelevantFields();
+
+			var idx = 0;
+			Parallel.ForEach(list, (field) => {
+				CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma);
+				idx++;
+				worker?.ReportProgress(idx * 100 / list.Count);
+			});
+
 			List<CheckViewModel> checks = new List<CheckViewModel>();
 			var border = 170;
 			if (leftDarts == 2)
@@ -92,7 +101,7 @@ namespace CheckApp.Services
 					if (score - neighbor.Value == 0 &&
 					    (neighbor.Type == FieldEnum.Double || neighbor.Type == FieldEnum.DoubleBull))
 					{
-						var randomCheck = new CheckViewModel(neighbor, null, null, dict[neighbor]);
+						var randomCheck = new CheckViewModel(neighbor, null, null, dict[neighbor], dict[neighbor]);
 						prop += dict[neighbor];
 						neighborSubChecks.Add(randomCheck.Check);
 						continue;
@@ -116,7 +125,7 @@ namespace CheckApp.Services
 							x.ScoreDart = neighbor;
 						x.Propability = x.Propability * dict[neighbor];
 					});
-					neighborSubChecks.AddRange(subCheck.Check.SubChecks);
+					//neighborSubChecks.AddRange(subCheck.Check.SubChecks);
 				}
 
 				foreach (var currentCheck in currentChecks)
@@ -136,20 +145,25 @@ namespace CheckApp.Services
 						
 					if (oneDartFinish)
 					{
-						var propa = CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma) + propx;
-						checks.Add(new CheckViewModel(field, null, null, propa, subChecks));
+						var exactProp = CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma);
+						var propa = exactProp + propx;
+						checks.Add(new CheckViewModel(field, null, null, propa, exactProp, subChecks));
 					}
 					else if (currentCheck.Check.AufCheckDart != null)
 					{
-						var propa = CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma) * CheckSimulator.GetSuccessRate(currentCheck.Check.AufCheckDart, _config.My, _config.Sigma) *
-						            CheckSimulator.GetSuccessRate(currentCheck.Check.CheckDart, _config.My, _config.Sigma) + propx;
+						var exactProp = CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma) *
+						                CheckSimulator.GetSuccessRate(currentCheck.Check.AufCheckDart, _config.My, _config.Sigma) *
+						                CheckSimulator.GetSuccessRate(currentCheck.Check.CheckDart, _config.My, _config.Sigma);
+						var propa = exactProp + propx;
 						checks.Add(new CheckViewModel(field, currentCheck.Check.AufCheckDart,
-							currentCheck.Check.CheckDart, propa, subChecks));
+							currentCheck.Check.CheckDart, propa, exactProp, subChecks));
 					}
 					else
 					{
-						var propa = CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma) * CheckSimulator.GetSuccessRate(currentCheck.Check.CheckDart, _config.My, _config.Sigma) + propx;
-						checks.Add(new CheckViewModel(field, currentCheck.Check.CheckDart, null, propa, subChecks));
+						var exactProp = CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma) *
+						                CheckSimulator.GetSuccessRate(currentCheck.Check.CheckDart, _config.My, _config.Sigma);
+						var propa = exactProp + propx;
+						checks.Add(new CheckViewModel(field, currentCheck.Check.CheckDart, null, propa, exactProp, subChecks));
 					}
 				}
 			}
@@ -163,7 +177,7 @@ namespace CheckApp.Services
 				return null;
 			var doubleField = GetAllDoubles().Single(x => x.Value == score);
 			var doubleProp = CheckSimulator.GetSuccessRate(doubleField, _config.My, _config.Sigma);
-			var check = new CheckViewModel(doubleField, null, null, doubleProp);
+			var check = new CheckViewModel(doubleField, null, null, doubleProp, doubleProp);
 			return new List<CheckViewModel> {check};
 		}
 
@@ -195,7 +209,7 @@ namespace CheckApp.Services
 				{
 					if (score - neighbor.Value == 0 && (neighbor.Type == FieldEnum.Double || neighbor.Type == FieldEnum.DoubleBull))
 					{
-						var randomCheck = new CheckViewModel(neighbor, null, null, dict[neighbor]);
+						var randomCheck = new CheckViewModel(neighbor, null, null, dict[neighbor], dict[neighbor]);
 						prop += dict[neighbor];
 						subChecks.Add(randomCheck.Check);
 						continue;
@@ -211,9 +225,9 @@ namespace CheckApp.Services
 					subChecks.Add(subCheck.Check);
 				}
 
-				var newCheck = new CheckViewModel(field, check.Check.CheckDart, null, prop, subChecks);
+				var newCheck = new CheckViewModel(field, check.Check.CheckDart, null, prop, check.Check.Propability * CheckSimulator.GetSuccessRate(field, _config.My, _config.Sigma), subChecks);
 				if (oneDartFinish)
-					newCheck = new CheckViewModel(field, null, null, prop, subChecks);
+					newCheck = new CheckViewModel(field, null, null, prop, prop, subChecks);
 				checks.Add(newCheck);
 			}
 
